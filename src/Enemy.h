@@ -10,7 +10,7 @@ public:
 	Enemy()
 	{
 	}
-	Enemy(float pScale, vec3 pPosition, unsigned char* pImage) :Object(pScale, pPosition, pImage)
+	Enemy(float pScale, vec3 pPosition, char* pImagePath, char* path) :Object(pScale, pPosition, pImagePath, path)
 	{
 		HP = 100;
 	}

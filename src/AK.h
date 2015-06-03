@@ -9,7 +9,7 @@ public:
 	AK(){
 
 	}
-	AK(float pScale, vec3 pPosition, unsigned char* pImage) :Object(pScale,pPosition,pImage)
+	AK(float pScale, vec3 pPosition, char* pImagePath, char* path) :Object(pScale,pPosition,pImagePath,path)
 	{
 		direction = vec3(0,0,0);
 	}

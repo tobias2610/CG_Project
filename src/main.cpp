@@ -19,23 +19,15 @@ int     windowWidth, windowHeight;
 // global variables
 int			frame = 0;	// index of rendering frames
 bool		bMouseLButtonDown = false;
-Mesh*		pMesh_AK = nullptr;
-Mesh*		pMesh_Box = nullptr;
-Mesh*		pMesh_Enemy = nullptr;
 Camera		camera;
 AK			ak;
 Box			box;
 Enemy		enemy;
 Trackball	trackball(camera.viewMatrix, 1.0f);
-GLuint	textureObject = 0;
+GLuint		textureObject = 0;
 Light		light;
 Material	material;
 std::vector<Object> objects;
-// forward declaration of image loader function available at stb_image.c
-extern "C" unsigned char*	stbi_load(const char* filename, int* x, int* y, int* comp, int req_comp);
-extern "C" void				stbi_image_free(void* retval_from_stbi_load);
-
-int width, height, comp;
 //*******************************************************************
 void update()
 {
@@ -73,7 +65,7 @@ void render()
 	glUseProgram(program);
 
 	//*****************************************************BOX*********************************************************
-	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Box->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
 
 	// bind vertex position buffer
 	GLuint vertexPositionLoc = glGetAttribLocation(program, "position");
@@ -90,7 +82,11 @@ void render()
 	glEnableVertexAttribArray(vertexTexlLoc);
 	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
 
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, box.getImageWidth(), box.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
+
+	for (int k = 1, w = box.getImageWidth() >> 1, h = box.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	for (int i = 0; i < num_boxes; i++){
 		mat4 modelMatrix = mat4::identity();
@@ -99,12 +95,12 @@ void render()
 
 		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
-		glDrawArrays(GL_TRIANGLES, 0, pMesh_Box->vertexList.size());
+		glDrawArrays(GL_TRIANGLES, 0, box.getMesh()->vertexList.size());
 	}
 
 	//*****************************************************ENEMY**********************************************************************************
 
-	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Enemy->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, enemy.getMesh()->vertexBuffer);
 
 	// bind vertex position buffer
 	vertexPositionLoc = glGetAttribLocation(program, "position");
@@ -121,7 +117,11 @@ void render()
 	glEnableVertexAttribArray(vertexTexlLoc);
 	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
 
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, enemy.getImage());
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, enemy.getImageWidth(), enemy.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, enemy.getImage());
+
+	for (int k = 1, w = enemy.getImageWidth() >> 1, h = enemy.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	for (int i = 0; i < num_enemyes; i++){
 		mat4 modelMatrix = mat4::identity();
@@ -130,16 +130,13 @@ void render()
 
 		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
-		glDrawArrays(GL_TRIANGLES, 0, pMesh_Enemy->vertexList.size());
+		glDrawArrays(GL_TRIANGLES, 0, enemy.getMesh()->vertexList.size());
 	}
-
-
-
 
 	//*******************************************AK***********************************************************************
 
 	// bind vertex position buffer
-	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, ak.getMesh()->vertexBuffer);
 
 	// bind vertex position buffer
 	vertexPositionLoc = glGetAttribLocation(program, "position");
@@ -156,7 +153,11 @@ void render()
 	glEnableVertexAttribArray(vertexTexlLoc);
 	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
 
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, ak.getImage());
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, ak.getImageWidth(), ak.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, ak.getImage());
+
+	for (int k = 1, w = ak.getImageWidth() >> 1, h = ak.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	float gunRotateX = -ak.getDirection().y;
 	float gunRotateY = -ak.getDirection().x;
@@ -174,7 +175,7 @@ void render()
 
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
-	glDrawArrays(GL_TRIANGLES, 0, pMesh_AK->vertexList.size());
+	glDrawArrays(GL_TRIANGLES, 0, ak.getMesh()->vertexList.size());
 
 
 	
@@ -292,50 +293,33 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 	return true;
 }
 
-unsigned char* loadPic(char* path){
-	// load an image
-	unsigned char* image;
-	unsigned char* image0 = stbi_load(path, &width, &height, &comp, 0);
-	//flip image vertically
-	image = (unsigned char*)malloc(sizeof(unsigned char)*width*height*comp);
-	for (int y = 0, stride = width*comp; y < height; y++) memcpy(image + (height - 1 - y)*stride, image0 + y*stride, stride); // vertical flip
-	stbi_image_free(image0); // release the original image
-	return image;
-}
-
 bool userInit()
 {
 
-	pMesh_Box = loadBox();
-	box = Box(1.f, vec3(0.f, 0.f, -5.f), loadPic("../bin/Images/Box.jpg"));
-	pMesh_Enemy = loadBox();
-	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), loadPic("../bin/Images/Enemy.jpg"));
-	pMesh_AK = loadMesh("../bin/Mods/AK.obj");
-	ak = AK(0.006f, vec3(0, 0, 0), loadPic("../bin/Images/tex_AK.jpg"));
+	box = Box(1.f, vec3(0.f, 0.f, -5.f), "../bin/Images/Box.jpg", NULL);
+	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", NULL);
+	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 
-	//GLuint buff[] = { pMesh_AK->vertexBuffer, pMesh_Box->vertexBuffer };
 
 	// create a vertex buffer
-	glGenBuffers(1, &pMesh_AK->vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, pMesh_AK->vertexList.size()*sizeof(vertex), &pMesh_AK->vertexList[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &ak.getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, ak.getMesh()->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, ak.getMesh()->vertexList.size()*sizeof(vertex), &ak.getMesh()->vertexList[0], GL_STATIC_DRAW);
 	
-	glGenBuffers(1, &pMesh_Box->vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Box->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, pMesh_Box->vertexList.size()*sizeof(vertex), &pMesh_Box->vertexList[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &box.getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, box.getMesh()->vertexList.size()*sizeof(vertex), &box.getMesh()->vertexList[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &pMesh_Enemy->vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Enemy->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, pMesh_Enemy->vertexList.size()*sizeof(vertex), &pMesh_Enemy->vertexList[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &enemy.getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, enemy.getMesh()->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, enemy.getMesh()->vertexList.size()*sizeof(vertex), &enemy.getMesh()->vertexList[0], GL_STATIC_DRAW);
 
 
 
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
+	//glTexImage2D(GL_TEXTURE_2D, 0, 3, box.getImageWidth(), box.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
 
 	//allocate and create mipmap
-	for (int k = 1, w = width >> 1, h = height >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
-		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	
 
 	// configure texture parameters
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -364,7 +348,7 @@ bool userInit()
 	material.ambient = vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	material.diffuse = vec4(0.8f, 0.8f, 0.8f, 1.0f);
 	material.specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	material.shininess = 1000000.0f;
+	material.shininess = 100.0f;
 
 	return true;
 }

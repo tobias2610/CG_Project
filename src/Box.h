@@ -8,7 +8,7 @@ public:
 	Box(){
 
 	}
-	Box(float pScale, vec3 pPosition, unsigned char* pImage) :Object(pScale, pPosition, pImage)
+	Box(float pScale, vec3 pPosition, char* pImagePath, char* path) :Object(pScale, pPosition, pImagePath, path)
 	{
 
 	}

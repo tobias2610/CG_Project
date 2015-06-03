@@ -120,3 +120,4 @@ inline bool initExtensions()
 
 	return true;
 }
+

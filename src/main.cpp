@@ -5,6 +5,7 @@
 #include "light.h"
 #include "AK.h"
 #include "Box.h"
+#define stepSize 0.1f
 //*******************************************************************
 // index variables for OpenGL objects
 GLuint	program = 0;					// ID holder for GPU program
@@ -26,7 +27,7 @@ Trackball	trackball(camera.viewMatrix, 1.0f);
 GLuint	textureObject = 0;
 Light		light;
 Material	material;
-
+std::vector<Object> objects;
 // forward declaration of image loader function available at stb_image.c
 extern "C" unsigned char*	stbi_load(const char* filename, int* x, int* y, int* comp, int req_comp);
 extern "C" void				stbi_image_free(void* retval_from_stbi_load);
@@ -86,9 +87,13 @@ void render()
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
+	float gunRotateX = 0;
+	float gunRotateY = 0;
+
 	mat4 modelMatrix;
 	//
-	//modelMatrix = mat4::rotate(vec3(0, 1, 0), PI)*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), gunRotateY)*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), gunRotateX)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 0, 1), PI)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI / 2)*modelMatrix;
 	modelMatrix = mat4::translate(-camera.at) * modelMatrix;
@@ -170,33 +175,14 @@ void mouse(int button, int state, int x, int y)
 
 void motion(int x, int y)
 {
-	camera.eye = vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), camera.eye.z);
+	camera.at = vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), camera.at.z);
+	ak.setDirection(vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), ak.getDirection().z));
 	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 }
 
 void move(int key, int x, int y)
 {
-	/*if (key == GLUT_KEY_UP){
-	camera.eye = vec3(camera.eye.x, camera.eye.y, camera.eye.z+1);
-	camera.at = vec3(camera.at.x, camera.at.y, camera.at.z+1);
-	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
-	}
-	else if (key == GLUT_KEY_DOWN){
-	camera.eye = vec3(camera.eye.x, camera.eye.y, camera.eye.z-1);
-	camera.at = vec3(camera.at.x, camera.at.y, camera.at.z-1);
-	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
-	}
-	else if (key == GLUT_KEY_LEFT){
-	camera.eye = vec3(camera.eye.x - 0.1f, camera.eye.y, camera.eye.z);
-	camera.at = vec3(camera.at.x -0.1f, camera.at.y, camera.at.z);
-	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
-	ak.setPosition(vec3(ak.getPosition().x - 1.f, ak.getPosition().y, ak.getPosition().z));
-	}
-	else if (key == GLUT_KEY_RIGHT){
-	camera.eye = vec3(camera.eye.x - 1, camera.eye.y, camera.eye.z);
-	camera.at = vec3(camera.at.x -1, camera.at.y, camera.at.z);
-	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
-	}*/
+
 }
 
 void idle()
@@ -206,10 +192,25 @@ void idle()
 
 void keyboard(unsigned char key, int x, int y)
 {
-	if (key == GLUT_KEY_UP){
-		camera.eye = vec3(camera.eye.x, camera.eye.y, camera.eye.z - 1);
-		camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
-		//ak.setPosition(vec3(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z + 1));
+	if (key == 'w' || key == 'W' ){
+		for (int i = 1; i < 2; i++){
+			box.setPosition(vec3(box.getPosition().x, box.getPosition().y, box.getPosition().z + stepSize));
+		}
+	}
+	else if (key == 's' || key == 'S'){
+		for (int i = 1; i < 2; i++){
+			box.setPosition(vec3(box.getPosition().x, box.getPosition().y, box.getPosition().z - stepSize));
+		}
+	}
+	else if (key == 'a' || key == 'A'){
+		for (int i = 1; i < 2; i++){
+			box.setPosition(vec3(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z));
+		}
+	}
+	else if (key == 'd' || key == 'D'){
+		for (int i = 1; i < 2; i++){
+			box.setPosition(vec3(box.getPosition().x + stepSize, box.getPosition().y, box.getPosition().z));
+		}
 	}
 }
 
@@ -274,6 +275,11 @@ bool userInit()
 	glGenBuffers(1, &pMesh_Box->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Box->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, pMesh_Box->vertexList.size()*sizeof(vertex), &pMesh_Box->vertexList[0], GL_STATIC_DRAW);
+
+
+	objects.resize(2 * sizeof(Object));
+	objects[0] = ak;
+	objects[1] = box;
 
 
 	// init camera

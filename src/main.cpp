@@ -5,8 +5,10 @@
 #include "light.h"
 #include "AK.h"
 #include "Box.h"
+#include "Enemy.h"
 #define stepSize 0.01f
-#define num_boxes 1
+#define num_boxes 3
+#define num_enemyes 1
 //*******************************************************************
 // index variables for OpenGL objects
 GLuint	program = 0;					// ID holder for GPU program
@@ -19,11 +21,11 @@ int			frame = 0;	// index of rendering frames
 bool		bMouseLButtonDown = false;
 Mesh*		pMesh_AK = nullptr;
 Mesh*		pMesh_Box = nullptr;
-Mesh*		pMesh_CC = nullptr;
+Mesh*		pMesh_Enemy = nullptr;
 Camera		camera;
-const int	NUM_OBJECTS = 9;
 AK			ak;
 Box			box;
+Enemy		enemy;
 Trackball	trackball(camera.viewMatrix, 1.0f);
 GLuint	textureObject = 0;
 Light		light;
@@ -70,6 +72,7 @@ void render()
 	// notify to GL that we like to use our program now
 	glUseProgram(program);
 
+	//*****************************************************BOX*********************************************************
 	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Box->vertexBuffer);
 
 	// bind vertex position buffer
@@ -92,12 +95,48 @@ void render()
 	for (int i = 0; i < num_boxes; i++){
 		mat4 modelMatrix = mat4::identity();
 		modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
-		modelMatrix = mat4::translate(box.getPosition().x, box.getPosition().y, box.getPosition().z) * modelMatrix;
+		modelMatrix = mat4::translate(box.getPosition().x+i, box.getPosition().y+i, box.getPosition().z+i) * modelMatrix;
 
 		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 		glDrawArrays(GL_TRIANGLES, 0, pMesh_Box->vertexList.size());
 	}
+
+	//*****************************************************ENEMY**********************************************************************************
+
+	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Enemy->vertexBuffer);
+
+	// bind vertex position buffer
+	vertexPositionLoc = glGetAttribLocation(program, "position");
+	glEnableVertexAttribArray(vertexPositionLoc);
+	glVertexAttribPointer(vertexPositionLoc, sizeof(vertex().pos) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+	// bind vertex normal buffer
+	vertexNormalLoc = glGetAttribLocation(program, "normal");
+	glEnableVertexAttribArray(vertexNormalLoc);
+	glVertexAttribPointer(vertexNormalLoc, sizeof(vertex().norm) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos)));
+
+	// bind vertex texture buffer
+	vertexTexlLoc = glGetAttribLocation(program, "texcoord");
+	glEnableVertexAttribArray(vertexTexlLoc);
+	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, enemy.getImage());
+
+	for (int i = 0; i < num_enemyes; i++){
+		mat4 modelMatrix = mat4::identity();
+		modelMatrix = mat4::scale(1, 1, enemy.getScale()) * modelMatrix;
+		modelMatrix = mat4::translate(enemy.getPosition().x + i, enemy.getPosition().y + i, enemy.getPosition().z + i) * modelMatrix;
+
+		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+		glDrawArrays(GL_TRIANGLES, 0, pMesh_Enemy->vertexList.size());
+	}
+
+
+
+
+	//*******************************************AK***********************************************************************
 
 	// bind vertex position buffer
 	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
@@ -175,7 +214,7 @@ void reshape(int width, int height)
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON){
-		printf("shoooooot");
+		
 	}
 }
 
@@ -218,9 +257,6 @@ void keyboard(unsigned char key, int x, int y)
 		for (int i = 1; i < 2; i++){
 			box.setPosition(vec3(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z));
 		}
-	}
-	else if (key == 'q'){
-		glutLeaveGameMode();
 	}
 }
 
@@ -272,6 +308,8 @@ bool userInit()
 
 	pMesh_Box = loadBox();
 	box = Box(1.f, vec3(0.f, 0.f, -5.f), loadPic("../bin/Images/Box.jpg"));
+	pMesh_Enemy = loadBox();
+	enemy = Enemy(0.1f, vec3(0.f, 0.f, -8.f), loadPic("../bin/Images/Box.jpg"));
 	pMesh_AK = loadMesh("../bin/Mods/AK.obj");
 	ak = AK(0.006f, vec3(0, 0, 0), loadPic("../bin/Images/tex_AK.jpg"));
 
@@ -285,6 +323,12 @@ bool userInit()
 	glGenBuffers(1, &pMesh_Box->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Box->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, pMesh_Box->vertexList.size()*sizeof(vertex), &pMesh_Box->vertexList[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &pMesh_Enemy->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Enemy->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, pMesh_Enemy->vertexList.size()*sizeof(vertex), &pMesh_Enemy->vertexList[0], GL_STATIC_DRAW);
+
+
 
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
 
@@ -320,7 +364,7 @@ bool userInit()
 	material.ambient = vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	material.diffuse = vec4(0.8f, 0.8f, 0.8f, 1.0f);
 	material.specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	material.shininess = 100.0f;
+	material.shininess = 1000000.0f;
 
 	return true;
 }
@@ -339,7 +383,7 @@ int main(int argc, char* argv[])
 	
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition((screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
-	glutCreateWindow("Solar System");
+	glutCreateWindow("FPS");
 
 	// Register callbacks
 	glutDisplayFunc(display);

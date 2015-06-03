@@ -21,6 +21,10 @@ public:
 		direction = pDirection;
 	}
 
+	void shoot(){
+		
+	}
+
 	~AK()
 	{
 		//free(image);

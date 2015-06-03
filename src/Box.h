@@ -13,6 +13,10 @@ public:
 
 	}
 
+	bool clisionDetect(vec3 direct){
+		
+	}
+
 	~Box()
 	{
 	}

@@ -6,6 +6,7 @@
 #include "AK.h"
 #include "Box.h"
 #define stepSize 0.1f
+#define num_boxes 1
 //*******************************************************************
 // index variables for OpenGL objects
 GLuint	program = 0;					// ID holder for GPU program
@@ -49,6 +50,18 @@ void update()
 	glBindTexture(GL_TEXTURE_2D, textureObject);
 	glUniform1i(glGetUniformLocation(program, "TEX"), 0);	 // GL_TEXTURE0
 
+	// setup light properties
+	glUniform4fv(glGetUniformLocation(program, "lightPosition"), 1, light.position);
+	glUniform4fv(glGetUniformLocation(program, "Ia"), 1, light.ambient);
+	glUniform4fv(glGetUniformLocation(program, "Id"), 1, light.diffuse);
+	glUniform4fv(glGetUniformLocation(program, "Is"), 1, light.specular);
+
+	// setup material properties
+	glUniform4fv(glGetUniformLocation(program, "Ka"), 1, material.ambient);
+	glUniform4fv(glGetUniformLocation(program, "Kd"), 1, material.diffuse);
+	glUniform4fv(glGetUniformLocation(program, "Ks"), 1, material.specular);
+	glUniform1f(glGetUniformLocation(program, "shininess"), material.shininess);
+
 }
 
 void render()
@@ -56,8 +69,8 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// notify to GL that we like to use our program now
 	glUseProgram(program);
-	// bind vertex position buffer
-	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
+
+	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Box->vertexBuffer);
 
 	// bind vertex position buffer
 	GLuint vertexPositionLoc = glGetAttribLocation(program, "position");
@@ -71,6 +84,48 @@ void render()
 
 	// bind vertex texture buffer
 	GLuint vertexTexlLoc = glGetAttribLocation(program, "texcoord");
+	glEnableVertexAttribArray(vertexTexlLoc);
+	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
+
+	//allocate and create mipmap
+	for (int k = 1, w = width >> 1, h = height >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// configure texture parameters
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	for (int i = 0; i < num_boxes; i++){
+		mat4 modelMatrix = mat4::identity();
+		modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
+		modelMatrix = mat4::translate(box.getPosition().x, box.getPosition().y, box.getPosition().z) * modelMatrix;
+
+		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+		glDrawArrays(GL_TRIANGLES, 0, pMesh_Box->vertexList.size());
+	}
+
+
+
+	// bind vertex position buffer
+	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
+
+	// bind vertex position buffer
+	vertexPositionLoc = glGetAttribLocation(program, "position");
+	glEnableVertexAttribArray(vertexPositionLoc);
+	glVertexAttribPointer(vertexPositionLoc, sizeof(vertex().pos) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+	// bind vertex normal buffer
+	vertexNormalLoc = glGetAttribLocation(program, "normal");
+	glEnableVertexAttribArray(vertexNormalLoc);
+	glVertexAttribPointer(vertexNormalLoc, sizeof(vertex().norm) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos)));
+
+	// bind vertex texture buffer
+	vertexTexlLoc = glGetAttribLocation(program, "texcoord");
 	glEnableVertexAttribArray(vertexTexlLoc);
 	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
 
@@ -91,7 +146,7 @@ void render()
 	float gunRotateX = -ak.getDirection().y;
 	float gunRotateY = -ak.getDirection().x;
 
-	mat4 modelMatrix;
+	mat4 modelMatrix = mat4::identity();
 	//
 	modelMatrix = mat4::rotate(vec3(0, 0, 1), gunRotateY)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), gunRotateX)*modelMatrix;
@@ -107,43 +162,7 @@ void render()
 	glDrawArrays(GL_TRIANGLES, 0, pMesh_AK->vertexList.size());
 
 
-	glBindBuffer(GL_ARRAY_BUFFER, pMesh_Box->vertexBuffer);
-
-	// bind vertex position buffer
-	vertexPositionLoc = glGetAttribLocation(program, "position");
-	glEnableVertexAttribArray(vertexPositionLoc);
-	glVertexAttribPointer(vertexPositionLoc, sizeof(vertex().pos) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-
-	// bind vertex normal buffer
-	vertexNormalLoc = glGetAttribLocation(program, "normal");
-	glEnableVertexAttribArray(vertexNormalLoc);
-	glVertexAttribPointer(vertexNormalLoc, sizeof(vertex().norm) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos)));
-
-	// bind vertex texture buffer
-	vertexTexlLoc = glGetAttribLocation(program, "texcoord");
-	glEnableVertexAttribArray(vertexTexlLoc);
-	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
-
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
-
-	//allocate and create mipmap
-	for (int k = 1, w = width >> 1, h = height >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
-		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// configure texture parameters
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-	modelMatrix = mat4::identity();
-	modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
-	modelMatrix = mat4::translate(box.getPosition().x, box.getPosition().y, box.getPosition().z) * modelMatrix;
-
-	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-
-	glDrawArrays(GL_TRIANGLES, 0, pMesh_Box->vertexList.size());
+	
 
 
 	
@@ -216,13 +235,16 @@ void keyboard(unsigned char key, int x, int y)
 	}
 	else if (key == 'a' || key == 'A'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec3(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z));
+			box.setPosition(vec3(box.getPosition().x + stepSize, box.getPosition().y, box.getPosition().z));
 		}
 	}
 	else if (key == 'd' || key == 'D'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec3(box.getPosition().x + stepSize, box.getPosition().y, box.getPosition().z));
+			box.setPosition(vec3(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z));
 		}
+	}
+	else if (key == 'q'){
+		glutLeaveGameMode();
 	}
 }
 
@@ -300,6 +322,17 @@ bool userInit()
 	camera.up = vec3(0, 1, 0);
 	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 
+	// init light properties
+	light.position = vec4(0.0f, 0.2f, 1.0f, 0.0f);   // directional light
+	light.ambient = vec4(0.2f, 0.2f, 0.2f, 1.0f);
+	light.diffuse = vec4(0.8f, 0.8f, 0.8f, 1.0f);
+	light.specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// init material properties
+	material.ambient = vec4(0.2f, 0.2f, 0.2f, 1.0f);
+	material.diffuse = vec4(0.8f, 0.8f, 0.8f, 1.0f);
+	material.specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	material.shininess = 100.0f;
 
 	return true;
 }
@@ -310,16 +343,15 @@ int main(int argc, char* argv[])
 	// GLUT initialization
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-
 	int screenWidth = glutGet(GLUT_SCREEN_WIDTH);
 	int screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
+
 	windowWidth = 1280;
 	windowHeight = 720;
-
+	
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition((screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
 	glutCreateWindow("Solar System");
-
 
 	// Register callbacks
 	glutDisplayFunc(display);

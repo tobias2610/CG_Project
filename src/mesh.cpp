@@ -11,7 +11,7 @@ Mesh* loadMesh(char* object )
 	pNewMesh->vertexList.resize(vertexBufferSize*sizeof(vertex));
 	const float* pos = loader.getPositions();
 	const float* norm = loader.getNormals();
-	const float* tex = loader.getTexCoords(1);
+	const float* tex = loader.getTexCoords(100);
 	int counterTex=0;
 	int counterNorm=0;
 	int counterPos=0;

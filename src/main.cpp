@@ -6,7 +6,7 @@
 #include "AK.h"
 #include "Box.h"
 #include "Enemy.h"
-#define stepSize 0.01f
+#define stepSize 0.05f
 #define num_boxes 3
 #define num_enemyes 1
 //*******************************************************************
@@ -177,12 +177,6 @@ void render()
 
 	glDrawArrays(GL_TRIANGLES, 0, ak.getMesh()->vertexList.size());
 
-
-	
-
-
-	
-	
 	// now swap backbuffer with front buffer, and display it
 	glutSwapBuffers();
 	// increment FRAME index
@@ -314,17 +308,9 @@ bool userInit()
 	glBindBuffer(GL_ARRAY_BUFFER, enemy.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, enemy.getMesh()->vertexList.size()*sizeof(vertex), &enemy.getMesh()->vertexList[0], GL_STATIC_DRAW);
 
-
-
-	//glTexImage2D(GL_TEXTURE_2D, 0, 3, box.getImageWidth(), box.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
-
-	//allocate and create mipmap
-	
-
-	// configure texture parameters
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	objects.resize(2 * sizeof(Object));

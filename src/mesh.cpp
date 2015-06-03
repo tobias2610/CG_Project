@@ -65,29 +65,29 @@ Mesh* loadBox(){
 	pNewMesh->vertexList[16].pos = vec3(-d, d, -d);
 	pNewMesh->vertexList[17].pos = vec3(-d, d, d);
 	//bottom
-	pNewMesh->vertexList[12].pos = vec3(d, -d, d);
-	pNewMesh->vertexList[13].pos = vec3(d, -d, -d);
-	pNewMesh->vertexList[14].pos = vec3(-d, -d, -d);
+	pNewMesh->vertexList[18].pos = vec3(d, -d, d);
+	pNewMesh->vertexList[19].pos = vec3(d, -d, -d);
+	pNewMesh->vertexList[20].pos = vec3(-d, -d, -d);
 
-	pNewMesh->vertexList[15].pos = vec3(d, -d, d);
-	pNewMesh->vertexList[16].pos = vec3(-d, -d, -d);
-	pNewMesh->vertexList[17].pos = vec3(-d, -d, d);
+	pNewMesh->vertexList[21].pos = vec3(d, -d, d);
+	pNewMesh->vertexList[22].pos = vec3(-d, -d, -d);
+	pNewMesh->vertexList[23].pos = vec3(-d, -d, d);
 	//left
-	pNewMesh->vertexList[12].pos = vec3(-d, d, d);
-	pNewMesh->vertexList[13].pos = vec3(-d, d, -d);
-	pNewMesh->vertexList[14].pos = vec3(-d, -d, d);
+	pNewMesh->vertexList[24].pos = vec3(-d, d, d);
+	pNewMesh->vertexList[25].pos = vec3(-d, d, -d);
+	pNewMesh->vertexList[26].pos = vec3(-d, -d, d);
 
-	pNewMesh->vertexList[15].pos = vec3(-d, -d, d);
-	pNewMesh->vertexList[16].pos = vec3(-d, d, -d);
-	pNewMesh->vertexList[17].pos = vec3(-d, -d, -d);
+	pNewMesh->vertexList[27].pos = vec3(-d, -d, d);
+	pNewMesh->vertexList[28].pos = vec3(-d, d, -d);
+	pNewMesh->vertexList[29].pos = vec3(-d, -d, -d);
 	//right
-	pNewMesh->vertexList[12].pos = vec3(d, d, d);
-	pNewMesh->vertexList[13].pos = vec3(d, d, -d);
-	pNewMesh->vertexList[14].pos = vec3(d, -d, d);
+	pNewMesh->vertexList[30].pos = vec3(d, d, d);
+	pNewMesh->vertexList[31].pos = vec3(d, d, -d);
+	pNewMesh->vertexList[32].pos = vec3(d, -d, d);
 
-	pNewMesh->vertexList[15].pos = vec3(d, -d, d);
-	pNewMesh->vertexList[16].pos = vec3(d, d, -d);
-	pNewMesh->vertexList[17].pos = vec3(d, -d, -d);
+	pNewMesh->vertexList[33].pos = vec3(d, -d, d);
+	pNewMesh->vertexList[34].pos = vec3(d, d, -d);
+	pNewMesh->vertexList[35].pos = vec3(d, -d, -d);
 
 	return pNewMesh;
 }

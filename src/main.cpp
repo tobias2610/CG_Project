@@ -309,7 +309,7 @@ bool userInit()
 	pMesh_Box = loadBox();
 	box = Box(1.f, vec3(0.f, 0.f, -5.f), loadPic("../bin/Images/Box.jpg"));
 	pMesh_Enemy = loadBox();
-	enemy = Enemy(0.1f, vec3(0.f, 0.f, -8.f), loadPic("../bin/Images/Box.jpg"));
+	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), loadPic("../bin/Images/Enemy.jpg"));
 	pMesh_AK = loadMesh("../bin/Mods/AK.obj");
 	ak = AK(0.006f, vec3(0, 0, 0), loadPic("../bin/Images/tex_AK.jpg"));
 

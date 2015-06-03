@@ -30,7 +30,7 @@ void main()
 	vec4 Irs = max(Ks*pow(dot(h,n),shininess)*Is,0.0);	// specular reflection
 
 	//gl_FragColor = Ira + Ird + Irs;
-	gl_FragColor = vec4(1.f,1.f,1.f,1.f);//vec4(normalize(norm), 1.0);
-	//gl_FragColor = texture2D( TEX, tc ) + Ira + Ird + Irs; // sampling color from texture
+	//gl_FragColor = vec4(1.f,1.f,1.f,1.f);//vec4(normalize(norm), 1.0);
+	gl_FragColor = texture2D( TEX, tc ) + Ira + Ird + Irs; // sampling color from texture
 
 }

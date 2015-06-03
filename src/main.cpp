@@ -87,12 +87,13 @@ void render()
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-	float gunRotateX = 0;
-	float gunRotateY = 0;
+
+	float gunRotateX = -ak.getDirection().y;
+	float gunRotateY = -ak.getDirection().x;
 
 	mat4 modelMatrix;
 	//
-	modelMatrix = mat4::rotate(vec3(0, 1, 0), gunRotateY)*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 0, 1), gunRotateY)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), gunRotateX)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 0, 1), PI)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI / 2)*modelMatrix;
@@ -123,8 +124,18 @@ void render()
 	glEnableVertexAttribArray(vertexTexlLoc);
 	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
 
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, ak.getImage());
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
 
+	//allocate and create mipmap
+	for (int k = 1, w = width >> 1, h = height >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// configure texture parameters
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
 	modelMatrix = mat4::identity();
 	modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
@@ -177,6 +188,7 @@ void motion(int x, int y)
 {
 	camera.at = vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), camera.at.z);
 	ak.setDirection(vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), ak.getDirection().z));
+	ak.setPosition(vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), ak.getPosition().z));
 	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 }
 

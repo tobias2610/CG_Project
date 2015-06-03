@@ -89,5 +89,105 @@ Mesh* loadBox(){
 	pNewMesh->vertexList[34].pos = vec3(d, d, -d);
 	pNewMesh->vertexList[35].pos = vec3(d, -d, -d);
 
+	//normal
+	//front
+	pNewMesh->vertexList[0].norm = vec3(d, d, d).normalize();
+	pNewMesh->vertexList[1].norm = vec3(-d, d, d).normalize();
+	pNewMesh->vertexList[2].norm = vec3(d, -d, d).normalize();
+
+	pNewMesh->vertexList[3].norm = vec3(d, -d, d).normalize();
+	pNewMesh->vertexList[4].norm = vec3(-d, d, d).normalize();
+	pNewMesh->vertexList[5].norm = vec3(-d, -d, d).normalize();
+	//back
+	pNewMesh->vertexList[6].norm = vec3(d, d, -d).normalize();
+	pNewMesh->vertexList[7].norm = vec3(-d, d, -d).normalize();
+	pNewMesh->vertexList[8].norm = vec3(d, -d, -d).normalize();
+
+	pNewMesh->vertexList[9].norm = vec3(d, -d, -d).normalize();
+	pNewMesh->vertexList[10].norm = vec3(-d, d, -d).normalize();
+	pNewMesh->vertexList[11].norm = vec3(-d, -d, -d).normalize();
+	//top
+	pNewMesh->vertexList[12].norm = vec3(d, d, d).normalize();
+	pNewMesh->vertexList[13].norm = vec3(d, d, -d).normalize();
+	pNewMesh->vertexList[14].norm = vec3(-d, d, -d).normalize();
+
+	pNewMesh->vertexList[15].norm = vec3(d, d, d).normalize();
+	pNewMesh->vertexList[16].norm = vec3(-d, d, -d).normalize();
+	pNewMesh->vertexList[17].norm = vec3(-d, d, d).normalize();
+	//bottom
+	pNewMesh->vertexList[18].norm = vec3(d, -d, d).normalize();
+	pNewMesh->vertexList[19].norm = vec3(d, -d, -d).normalize();
+	pNewMesh->vertexList[20].norm = vec3(-d, -d, -d).normalize();
+
+	pNewMesh->vertexList[21].norm = vec3(d, -d, d).normalize();
+	pNewMesh->vertexList[22].norm = vec3(-d, -d, -d).normalize();
+	pNewMesh->vertexList[23].norm = vec3(-d, -d, d).normalize();
+	//left
+	pNewMesh->vertexList[24].norm = vec3(-d, d, d).normalize();
+	pNewMesh->vertexList[25].norm = vec3(-d, d, -d).normalize();
+	pNewMesh->vertexList[26].norm = vec3(-d, -d, d).normalize();
+
+	pNewMesh->vertexList[27].norm = vec3(-d, -d, d).normalize();
+	pNewMesh->vertexList[28].norm = vec3(-d, d, -d).normalize();
+	pNewMesh->vertexList[29].norm = vec3(-d, -d, -d).normalize();
+	//right
+	pNewMesh->vertexList[30].norm = vec3(d, d, d).normalize();
+	pNewMesh->vertexList[31].norm = vec3(d, d, -d).normalize();
+	pNewMesh->vertexList[32].norm = vec3(d, -d, d).normalize();
+
+	pNewMesh->vertexList[33].norm = vec3(d, -d, d).normalize();
+	pNewMesh->vertexList[34].norm = vec3(d, d, -d).normalize();
+	pNewMesh->vertexList[35].norm = vec3(d, -d, -d).normalize();
+
+	//tex
+	//front
+	pNewMesh->vertexList[0].tex = vec2(1, 1);
+	pNewMesh->vertexList[1].tex = vec2(0, 1);
+	pNewMesh->vertexList[2].tex = vec2(1, 0);
+
+	pNewMesh->vertexList[3].tex = vec2(1, 0);
+	pNewMesh->vertexList[4].tex = vec2(0, 1);
+	pNewMesh->vertexList[5].tex = vec2(0, 0);
+	//back
+	pNewMesh->vertexList[6].tex = vec2(1, 1);
+	pNewMesh->vertexList[7].tex = vec2(0, 1);
+	pNewMesh->vertexList[8].tex = vec2(1, 0);
+
+	pNewMesh->vertexList[9].tex = vec2(1, 0);
+	pNewMesh->vertexList[10].tex = vec2(0, 1);
+	pNewMesh->vertexList[11].tex = vec2(0, 0);
+	//top
+	pNewMesh->vertexList[12].tex = vec2(1, 1);
+	pNewMesh->vertexList[13].tex = vec2(0, 1);
+	pNewMesh->vertexList[14].tex = vec2(1, 0);
+
+	pNewMesh->vertexList[15].tex = vec2(1, 0);
+	pNewMesh->vertexList[16].tex = vec2(0, 1);
+	pNewMesh->vertexList[17].tex = vec2(0, 0);
+	//bottom
+	pNewMesh->vertexList[18].tex = vec2(1, 1);
+	pNewMesh->vertexList[19].tex = vec2(0, 1);
+	pNewMesh->vertexList[20].tex = vec2(1, 0);
+
+	pNewMesh->vertexList[21].tex = vec2(1, 0);
+	pNewMesh->vertexList[22].tex = vec2(0, 1);
+	pNewMesh->vertexList[23].tex = vec2(0, 0);
+	//left
+	pNewMesh->vertexList[24].tex = vec2(1, 1);
+	pNewMesh->vertexList[25].tex = vec2(0, 1);
+	pNewMesh->vertexList[26].tex = vec2(1, 0);
+
+	pNewMesh->vertexList[27].tex = vec2(1, 0);
+	pNewMesh->vertexList[28].tex = vec2(0, 1);
+	pNewMesh->vertexList[29].tex = vec2(0, 0);
+	//right
+	pNewMesh->vertexList[30].tex = vec2(1, 1);
+	pNewMesh->vertexList[31].tex = vec2(0, 1);
+	pNewMesh->vertexList[32].tex = vec2(1, 0);
+
+	pNewMesh->vertexList[33].tex = vec2(1, 0);
+	pNewMesh->vertexList[34].tex = vec2(0, 1);
+	pNewMesh->vertexList[35].tex = vec2(0, 0);
+
 	return pNewMesh;
 }

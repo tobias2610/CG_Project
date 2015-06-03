@@ -47,7 +47,7 @@ void update()
 	glUniformMatrix4fv(glGetUniformLocation(program, "projectionMatrix"), 1, GL_TRUE, camera.projectionMatrix);
 	glBindTexture(GL_TEXTURE_2D, textureObject);
 	glUniform1i(glGetUniformLocation(program, "TEX"), 0);	 // GL_TEXTURE0
-	 
+
 }
 
 void render()
@@ -55,7 +55,6 @@ void render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// notify to GL that we like to use our program now
 	glUseProgram(program);
-
 	// bind vertex position buffer
 	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
 
@@ -91,7 +90,7 @@ void render()
 	//
 	//modelMatrix = mat4::rotate(vec3(0, 1, 0), PI)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 0, 1), PI)*modelMatrix;
-	modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI/2)*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI / 2)*modelMatrix;
 	modelMatrix = mat4::translate(-camera.at) * modelMatrix;
 	modelMatrix = mat4::scale(ak.getScale(), ak.getScale(), ak.getScale()) * modelMatrix;
 	//modelMatrix = mat4::translate(camera.at) * modelMatrix; 
@@ -99,21 +98,13 @@ void render()
 
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
-	glDrawArrays(GL_TRIANGLES,0, pMesh_AK->vertexList.size());
-
-	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, pMesh_AK->vertexList.size()*sizeof(vertex), &pMesh_AK->vertexList[0], GL_STATIC_DRAW);
+	glDrawArrays(GL_TRIANGLES, 0, pMesh_AK->vertexList.size());
 
 
-	// bind vertex position buffer
-	vertexPositionLoc = glGetAttribLocation(program, "position");
-	glEnableVertexAttribArray(vertexPositionLoc);
-	glVertexAttribPointer(vertexPositionLoc, sizeof(vertex().pos) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
-
-	// bind vertex normal buffer
-	vertexNormalLoc = glGetAttribLocation(program, "normal");
-	glEnableVertexAttribArray(vertexNormalLoc);
-	glVertexAttribPointer(vertexNormalLoc, sizeof(vertex().norm) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos)));
+	update();
+	//glBindBuffer(GL_ARRAY_BUFFER, NULL);
+	//glBindBuffer(GL_ARRAY_BUFFER, pMesh_Box->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, pMesh_Box->vertexList.size()*sizeof(vertex), &pMesh_Box->vertexList[0], GL_STATIC_DRAW);
 
 	// bind vertex texture buffer
 	vertexTexlLoc = glGetAttribLocation(program, "texcoord");
@@ -139,7 +130,7 @@ void render()
 	modelMatrix = mat4::rotate(vec3(0, 0, 1), PI)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI / 2)*modelMatrix;
 	modelMatrix = mat4::translate(-camera.at) * modelMatrix;
-	modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
+	modelMatrix = mat4::scale(0, 0, 0) * modelMatrix;
 	//modelMatrix = mat4::translate(camera.at) * modelMatrix; 
 	modelMatrix = mat4::translate(box.getPosition().x, box.getPosition().y, box.getPosition().z) * modelMatrix;
 
@@ -150,6 +141,7 @@ void render()
 
 	// now swap backbuffer with front buffer, and display it
 	glutSwapBuffers();
+
 
 	// increment FRAME index
 	frame++;
@@ -194,25 +186,25 @@ void motion(int x, int y)
 void move(int key, int x, int y)
 {
 	/*if (key == GLUT_KEY_UP){
-		camera.eye = vec3(camera.eye.x, camera.eye.y, camera.eye.z+1);
-		camera.at = vec3(camera.at.x, camera.at.y, camera.at.z+1);
-		camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
+	camera.eye = vec3(camera.eye.x, camera.eye.y, camera.eye.z+1);
+	camera.at = vec3(camera.at.x, camera.at.y, camera.at.z+1);
+	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 	}
 	else if (key == GLUT_KEY_DOWN){
-		camera.eye = vec3(camera.eye.x, camera.eye.y, camera.eye.z-1);
-		camera.at = vec3(camera.at.x, camera.at.y, camera.at.z-1);
-		camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
+	camera.eye = vec3(camera.eye.x, camera.eye.y, camera.eye.z-1);
+	camera.at = vec3(camera.at.x, camera.at.y, camera.at.z-1);
+	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 	}
 	else if (key == GLUT_KEY_LEFT){
-		camera.eye = vec3(camera.eye.x - 0.1f, camera.eye.y, camera.eye.z);
-		camera.at = vec3(camera.at.x -0.1f, camera.at.y, camera.at.z);
-		camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
-		ak.setPosition(vec3(ak.getPosition().x - 1.f, ak.getPosition().y, ak.getPosition().z));
+	camera.eye = vec3(camera.eye.x - 0.1f, camera.eye.y, camera.eye.z);
+	camera.at = vec3(camera.at.x -0.1f, camera.at.y, camera.at.z);
+	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
+	ak.setPosition(vec3(ak.getPosition().x - 1.f, ak.getPosition().y, ak.getPosition().z));
 	}
 	else if (key == GLUT_KEY_RIGHT){
-		camera.eye = vec3(camera.eye.x - 1, camera.eye.y, camera.eye.z);
-		camera.at = vec3(camera.at.x -1, camera.at.y, camera.at.z);
-		camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
+	camera.eye = vec3(camera.eye.x - 1, camera.eye.y, camera.eye.z);
+	camera.at = vec3(camera.at.x -1, camera.at.y, camera.at.z);
+	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 	}*/
 }
 
@@ -224,7 +216,7 @@ void idle()
 void keyboard(unsigned char key, int x, int y)
 {
 	if (key == GLUT_KEY_UP){
-		camera.eye = vec3(camera.eye.x, camera.eye.y, camera.eye.z-1);
+		camera.eye = vec3(camera.eye.x, camera.eye.y, camera.eye.z - 1);
 		camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 		//ak.setPosition(vec3(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z + 1));
 	}
@@ -277,9 +269,9 @@ bool userInit()
 {
 
 	pMesh_Box = loadBox();
-	box = Box(100.f, vec3(0.f, 10.f, 10.f), loadPic("../bin/Images/Box.jpg"));
+	box = Box(1000000.f, vec3(0.f, 0.f, 5.f), loadPic("../bin/Images/Box.jpg"));
 	pMesh_AK = loadMesh("../bin/Mods/AK.obj");
-	ak = AK(0.006f, vec3(0, 0,0),loadPic("../bin/Images/tex_AK.jpg"));
+	ak = AK(0.006f, vec3(0, 0, 0), loadPic("../bin/Images/tex_AK.jpg"));
 
 	GLuint buff[] = { pMesh_AK->vertexBuffer, pMesh_Box->vertexBuffer };
 
@@ -288,14 +280,14 @@ bool userInit()
 	glBindBuffer(GL_ARRAY_BUFFER, pMesh_AK->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, pMesh_AK->vertexList.size()*sizeof(vertex), &pMesh_AK->vertexList[0], GL_STATIC_DRAW);
 
-	
+
 	// init camera
 	camera.eye = vec3(0, 0.2f, 1);
 	camera.at = vec3(0, 0, 0);
 	camera.up = vec3(0, 1, 0);
 	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 
-	 
+
 	return true;
 }
 

@@ -227,7 +227,7 @@ void motion(int x, int y)
 	//a.y = 0;
 	//b.y = 0;
 
-	angel = (x - xBefore);//(float)(a.dot(b) / (a.length()*b.length())/720);
+	angel = (float) sin(xBefore/x);//(float)(a.dot(b) / (a.length()*b.length())/720);
 	printf("%f\n", angel);
 
 	if (x > xBefore){

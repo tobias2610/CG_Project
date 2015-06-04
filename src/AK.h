@@ -11,7 +11,7 @@ public:
 	}
 	AK(float pScale, vec3 pPosition, char* pImagePath, char* path) :Object(pScale,pPosition,pImagePath,path)
 	{
-		direction = vec3(0,0,0);
+		direction = vec3(0,0,1);
 	}
 
 	vec3 getDirection(){

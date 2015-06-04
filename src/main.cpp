@@ -227,7 +227,7 @@ void motion(int x, int y)
 	//a.y = 0;
 	//b.y = 0;
 
-	angel = (float)(a.dot(b) / (a.length()*b.length())/720);
+	angel = (x - xBefore);//(float)(a.dot(b) / (a.length()*b.length())/720);
 	printf("%f\n", angel);
 
 	if (x > xBefore){
@@ -380,7 +380,7 @@ int main(int argc, char* argv[])
 	glutCreateWindow("FPS");
 	glutSetCursor(GLUT_CURSOR_NONE);
 	glutWarpPointer(windowHeight / 2, windowWidth / 2);
-	glutEnterGameMode();
+
 	// Register callbacks
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);		// callback when the window is resized

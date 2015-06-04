@@ -14,7 +14,7 @@ struct Image{
 class Object
 {
 private:
-	vec3 position;
+	vec4 position;
 	float scale;
 	Image image;
 	Mesh* mesh;
@@ -60,13 +60,13 @@ public:
 	virtual int getImageHeight(){
 		return image.height;
 	}
-	virtual vec3 getPosition(){
+	virtual vec4 getPosition(){
 		return position;
 	}
 	virtual float getScale(){
 		return scale;
 	}
-	virtual void setPosition(vec3 pPos){
+	virtual void setPosition(vec4 pPos){
 		position = pPos;
 	}
 };

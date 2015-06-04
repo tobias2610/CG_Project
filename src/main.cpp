@@ -28,6 +28,8 @@ GLuint		textureObject = 0;
 Light		light;
 Material	material;
 std::vector<Object> objects;
+float angel;
+int xBefore;
 //*******************************************************************
 void update()
 {
@@ -215,10 +217,31 @@ void mouse(int button, int state, int x, int y)
 
 void motion(int x, int y)
 {
-	camera.at = vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), camera.at.z);
-	ak.setDirection(vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), ak.getDirection().z));
-	ak.setPosition(vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), ak.getPosition().z));
+	//camera.at = vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), camera.at.z);
+	//ak.setDirection(vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), ak.getDirection().z));
+	//ak.setPosition(vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), ak.getPosition().z));
 	
+	vec3 a = ak.getDirection();
+	vec3 b = vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), 1);
+
+	//a.y = 0;
+	//b.y = 0;
+
+	angel = (float)(a.dot(b) / (a.length()*b.length())/720);
+	printf("%f\n", angel);
+
+	if (x > xBefore){
+		printf("jaa");
+		box.setPosition(mat4::rotate(vec3(0, 1, 0), 2*PI-angel)*box.getPosition());
+	}
+	else{
+		box.setPosition(mat4::rotate(vec3(0, 1, 0), angel)*box.getPosition());
+	}
+	xBefore = x;
+
+	/*for (int i = 1; i < 2; i++){
+		box.setPosition(vec3(box.getPosition().x, box.getPosition().y, box.getPosition().z + stepSize));
+	}*/
 	
 	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 }
@@ -237,22 +260,22 @@ void keyboard(unsigned char key, int x, int y)
 {
 	if (key == 'w' || key == 'W' ){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec3(box.getPosition().x, box.getPosition().y, box.getPosition().z + stepSize));
+			box.setPosition(vec4(box.getPosition().x, box.getPosition().y, box.getPosition().z + stepSize,box.getPosition().w));
 		}
 	}
 	else if (key == 's' || key == 'S'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec3(box.getPosition().x, box.getPosition().y, box.getPosition().z - stepSize));
+			box.setPosition(vec4(box.getPosition().x, box.getPosition().y, box.getPosition().z - stepSize, box.getPosition().w));
 		}
 	}
 	else if (key == 'a' || key == 'A'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec3(box.getPosition().x + stepSize, box.getPosition().y, box.getPosition().z));
+			box.setPosition(vec4(box.getPosition().x + stepSize, box.getPosition().y, box.getPosition().z, box.getPosition().w));
 		}
 	}
 	else if (key == 'd' || key == 'D'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec3(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z));
+			box.setPosition(vec4(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z, box.getPosition().w));
 		}
 	}
 }
@@ -355,7 +378,9 @@ int main(int argc, char* argv[])
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition((screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
 	glutCreateWindow("FPS");
-
+	glutSetCursor(GLUT_CURSOR_NONE);
+	glutWarpPointer(windowHeight / 2, windowWidth / 2);
+	glutEnterGameMode();
 	// Register callbacks
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);		// callback when the window is resized

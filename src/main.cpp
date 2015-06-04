@@ -28,8 +28,8 @@ GLuint		textureObject = 0;
 Light		light;
 Material	material;
 std::vector<Object> objects;
-float angel;
-int xBefore;
+int xBefore=0;
+int yBefore = 0;
 //*******************************************************************
 void update()
 {
@@ -210,40 +210,57 @@ void reshape(int width, int height)
 
 void mouse(int button, int state, int x, int y)
 {
-	if (button == GLUT_LEFT_BUTTON){
-		
-	}
+	/*if (button == GLUT_RIGHT_BUTTON)
+	{
+		if (state == GLUT_DOWN) {
+			xBefore = x;
+		}
+		else if (state == GLUT_UP){
+
+			vec4 a = vec4((float)xBefore / float(windowWidth - 1), 0, 1, 1).normalize();
+			vec4 b = vec4((float)x / float(windowWidth - 1), 0, 1, 1).normalize();
+
+			float angle = a.dot(b) / (a.length()*b.length());
+			printf("%f", angle);
+			if (x > xBefore){
+				box.setPosition(mat4::rotate(vec3(0, 1, 0), (2 * PI - (angle/5)))*box.getPosition());
+			}
+			else{
+				box.setPosition(mat4::rotate(vec3(0, 1, 0), angle/5)*box.getPosition());
+			}
+
+		}
+	}*/
 }
 
 void motion(int x, int y)
 {
-	//camera.at = vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), camera.at.z);
-	//ak.setDirection(vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), ak.getDirection().z));
-	//ak.setPosition(vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), ak.getPosition().z));
-	
-	vec3 a = ak.getDirection();
-	vec3 b = vec3((x - windowWidth / 2) / float(windowWidth - 1), -(y - windowHeight / 2) / float(windowHeight - 1), 1);
+		vec4 a = vec4((float)xBefore / float(windowWidth - 1), 0, 1, 1).normalize();
+		vec4 b = vec4((float)x / float(windowWidth - 1), 0, 1, 1).normalize();
 
-	//a.y = 0;
-	//b.y = 0;
+		float angle = a.dot(b) / (a.length()*b.length());
+		if (x > xBefore){
+			box.setPosition(mat4::rotate(vec3(0, 1, 0), (2 * PI - (angle / 80)))*box.getPosition());
+		}
+		else{
+			box.setPosition(mat4::rotate(vec3(0, 1, 0), angle / 80)*box.getPosition());
+		}
+		xBefore = x;
 
-	angel = (float) sin(xBefore/x);//(float)(a.dot(b) / (a.length()*b.length())/720);
-	printf("%f\n", angel);
 
-	if (x > xBefore){
-		printf("jaa");
-		box.setPosition(mat4::rotate(vec3(0, 1, 0), 2*PI-angel)*box.getPosition());
-	}
-	else{
-		box.setPosition(mat4::rotate(vec3(0, 1, 0), angel)*box.getPosition());
-	}
-	xBefore = x;
+		/*a = vec4(0, (float)yBefore / float(windowWidth - 1), 1, 1).normalize();
+		b = vec4(0, (float)y / float(windowWidth - 1), 1, 1).normalize();
 
-	/*for (int i = 1; i < 2; i++){
-		box.setPosition(vec3(box.getPosition().x, box.getPosition().y, box.getPosition().z + stepSize));
-	}*/
-	
-	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
+		angle = a.dot(b) / (a.length()*b.length());
+		if (y < yBefore){
+			box.setPosition(mat4::rotate(vec3(1, 0, 0), (2 * PI - (angle / 2000)))*box.getPosition());
+		}
+		else{
+			box.setPosition(mat4::rotate(vec3(1, 0, 0), angle / 2000)*box.getPosition());
+		}
+		yBefore = y;*/
+
+
 }
 
 void move(int key, int x, int y)
@@ -378,8 +395,8 @@ int main(int argc, char* argv[])
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition((screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
 	glutCreateWindow("FPS");
-	glutSetCursor(GLUT_CURSOR_NONE);
-	glutWarpPointer(windowHeight / 2, windowWidth / 2);
+	//glutSetCursor(GLUT_CURSOR_NONE);
+	//glutWarpPointer(windowHeight / 2, windowWidth / 2);
 
 	// Register callbacks
 	glutDisplayFunc(display);

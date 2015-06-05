@@ -6,9 +6,11 @@
 #include "AK.h"
 #include "Box.h"
 #include "Enemy.h"
+#include "Wall.h"
 #define stepSize 0.05f
 #define num_boxes 3
 #define num_enemyes 1
+#define num_Walls 6
 //*******************************************************************
 // index variables for OpenGL objects
 GLuint	program = 0;					// ID holder for GPU program
@@ -22,6 +24,7 @@ bool		bMouseLButtonDown = false;
 Camera		camera;
 AK			ak;
 Box			box;
+Wall		wall;
 Enemy		enemy;
 Trackball	trackball(camera.viewMatrix, 1.0f);
 GLuint		textureObject = 0;
@@ -66,8 +69,8 @@ void render()
 	// notify to GL that we like to use our program now
 	glUseProgram(program);
 
-	//*****************************************************BOX*********************************************************
-	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
+	//*****************************************************World*********************************************************
+	glBindBuffer(GL_ARRAY_BUFFER, wall.getMesh()->vertexBuffer);
 
 	// bind vertex position buffer
 	GLuint vertexPositionLoc = glGetAttribLocation(program, "position");
@@ -81,6 +84,111 @@ void render()
 
 	// bind vertex texture buffer
 	GLuint vertexTexlLoc = glGetAttribLocation(program, "texcoord");
+	glEnableVertexAttribArray(vertexTexlLoc);
+	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, wall.getImageWidth(), wall.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, wall.getImage());
+
+	for (int k = 1, w = wall.getImageWidth() >> 1, h = wall.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	for (int i = 0; i < num_Walls; i += 2){
+		//back and Front wall
+		if (i == 0){
+			//front
+			mat4 modelMatrix = mat4::identity();
+			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
+			//	modelMatrix = mat4::rotate(vec3(0, 1, 0), (1 / 2.0 * PI));
+			modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z) * modelMatrix;
+
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+			glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
+
+			//back
+			modelMatrix = mat4::identity();
+			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI));
+			modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z + 10) * modelMatrix;
+
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+			glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
+
+
+		}
+		//left and right wall
+		else if (i == 2){
+			//right
+			mat4 modelMatrix = mat4::identity();
+			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), (0.5 * PI));
+			modelMatrix = mat4::translate(wall.getPosition().x + 5, wall.getPosition().y, wall.getPosition().z + 5) * modelMatrix;
+
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+			glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
+
+			//left
+			modelMatrix = mat4::identity();
+			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), -(0.5 * PI));
+			modelMatrix = mat4::translate(wall.getPosition().x - 5, wall.getPosition().y, wall.getPosition().z + 5) * modelMatrix;
+
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+			glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
+
+		}
+		//bottom and seiling
+		else if (i == 4){
+			//bottom
+			mat4 modelMatrix = mat4::identity();
+			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
+			modelMatrix = mat4::rotate(vec3(1, 0, 0), (0.5 * PI));
+			modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y + 5, wall.getPosition().z + 5) * modelMatrix;
+
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+			glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
+
+			//seiling
+			modelMatrix = mat4::identity();
+			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), -(0.5 * PI));
+			modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y - 5, wall.getPosition().z + 5) * modelMatrix;
+
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+			glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
+		}
+		/*mat4 modelMatrix = mat4::identity();
+		modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
+		modelMatrix = mat4::rotate(vec3(0,1,0),(1/2.0 * PI));
+		modelMatrix = mat4::translate(wall.getPosition().x + 5, wall.getPosition().y, wall.getPosition().z + 5) * modelMatrix;
+
+		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+		glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
+		*/
+	}
+
+	//*****************************************************BOX*********************************************************
+	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
+
+	// bind vertex position buffer
+	vertexPositionLoc = glGetAttribLocation(program, "position");
+	glEnableVertexAttribArray(vertexPositionLoc);
+	glVertexAttribPointer(vertexPositionLoc, sizeof(vertex().pos) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+	// bind vertex normal buffer
+	vertexNormalLoc = glGetAttribLocation(program, "normal");
+	glEnableVertexAttribArray(vertexNormalLoc);
+	glVertexAttribPointer(vertexNormalLoc, sizeof(vertex().norm) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos)));
+
+	// bind vertex texture buffer
+	vertexTexlLoc = glGetAttribLocation(program, "texcoord");
 	glEnableVertexAttribArray(vertexTexlLoc);
 	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
 
@@ -331,13 +439,17 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 
 bool userInit()
 {
-
+	wall = Wall(10.f, vec3(0.f, 5.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
 	box = Box(1.f, vec3(0.f, 0.f, -5.f), "../bin/Images/Box.jpg", NULL);
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", NULL);
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 
 
 	// create a vertex buffer
+	glGenBuffers(1, &wall.getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, wall.getMesh()->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, wall.getMesh()->vertexList.size()*sizeof(vertex), &wall.getMesh()->vertexList[0], GL_STATIC_DRAW);
+
 	glGenBuffers(1, &ak.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, ak.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, ak.getMesh()->vertexList.size()*sizeof(vertex), &ak.getMesh()->vertexList[0], GL_STATIC_DRAW);

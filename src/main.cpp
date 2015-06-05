@@ -73,7 +73,7 @@ void render()
 	// notify to GL that we like to use our program now
 	glUseProgram(program);
 
-	//*****************************************************World*********************************************************
+	//*****************************************************World-Walls*********************************************************
 	glBindBuffer(GL_ARRAY_BUFFER, wall.getMesh()->vertexBuffer);
 
 	// bind vertex position buffer
@@ -151,7 +151,7 @@ void render()
 			mat4 modelMatrix = mat4::identity();
 			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
 			modelMatrix = mat4::rotate(vec3(1, 0, 0), (0.5 * PI));
-			modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y + 5, wall.getPosition().z + 5) * modelMatrix;
+			modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y - 5, wall.getPosition().z + 5) * modelMatrix;
 
 			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
@@ -162,6 +162,9 @@ void render()
 			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
 			modelMatrix = mat4::rotate(vec3(0, 1, 0), -(0.5 * PI));
 			modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y - 5, wall.getPosition().z + 5) * modelMatrix;
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), wall.getXRotation())*modelMatrix;
+			modelMatrix = mat4::rotate(vec3(1, 0, 0), wall.getYRotation())*modelMatrix;
+
 
 			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
@@ -342,11 +345,14 @@ void motion(int x, int y)
 
 		if (dx) {
 			box.setXRotation(((float)dx / 1000)+box.getXRotation());
+			wall.setXRotation(((float)dx / 1000) + wall.getXRotation());
 
 		}
 
 		if (dy) {
 			box.setYRotation(((float)dy / 1000) + box.getYRotation());
+			wall.setYRotation(((float)dy / 1000) + wall.getYRotation());
+
 		}
 
 		glutWarpPointer(windowWidth / 2, windowHeight / 2);
@@ -372,21 +378,29 @@ void keyboard(unsigned char key, int x, int y)
 	if (key == 'w' || key == 'W' ){
 		for (int i = 1; i < 2; i++){
 			box.setPosition(vec4(box.getPosition().x, box.getPosition().y, box.getPosition().z + stepSize,box.getPosition().w));
+			wall.setPosition(vec4(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z + stepSize, wall.getPosition().w));
+
 		}
 	}
 	else if (key == 's' || key == 'S'){
 		for (int i = 1; i < 2; i++){
 			box.setPosition(vec4(box.getPosition().x, box.getPosition().y, box.getPosition().z - stepSize, box.getPosition().w));
+			wall.setPosition(vec4(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z - stepSize, wall.getPosition().w));
+
 		}
 	}
 	else if (key == 'a' || key == 'A'){
 		for (int i = 1; i < 2; i++){
 			box.setPosition(vec4(box.getPosition().x + stepSize, box.getPosition().y, box.getPosition().z, box.getPosition().w));
+			wall.setPosition(vec4(wall.getPosition().x + stepSize, wall.getPosition().y, wall.getPosition().z, wall.getPosition().w));
+
 		}
 	}
 	else if (key == 'd' || key == 'D'){
 		for (int i = 1; i < 2; i++){
 			box.setPosition(vec4(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z, box.getPosition().w));
+			wall.setPosition(vec4(wall.getPosition().x - stepSize, wall.getPosition().y, wall.getPosition().z, wall.getPosition().w));
+
 		}
 	}
 	else if (key == 27){
@@ -428,7 +442,7 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 
 bool userInit()
 {
-	wall = Wall(10.f, vec3(0.f, 5.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
+	wall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
 	box = Box(1.f, vec3(0.f, 0.f, -5.f), "../bin/Images/Box.jpg", NULL);
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", NULL);
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
@@ -459,6 +473,7 @@ bool userInit()
 	objects.resize(2 * sizeof(Object));
 	objects[0] = ak;
 	objects[1] = box;
+	objects[2] = wall;
 
 	// init camera
 	camera.eye = vec3(0, 0.2f, 1);

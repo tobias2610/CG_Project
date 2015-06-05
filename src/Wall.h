@@ -3,7 +3,9 @@
 #pragma once
 class Wall : public Object
 {
-
+private:
+	float angleX;
+	float angleY;
 public:
 	Wall(){
 
@@ -15,6 +17,20 @@ public:
 
 	bool clisionDetect(vec3 direct){
 
+	}
+	float getXRotation(){
+		return angleX;
+	}
+
+	float getYRotation(){
+		return angleY;
+	}
+
+	void setXRotation(float dx){
+		angleX = dx;
+	}
+	void setYRotation(float dy){
+		angleY = dy;
 	}
 
 	~Wall()

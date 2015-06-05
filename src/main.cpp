@@ -1,3 +1,5 @@
+#include <windows.h> 
+#include <mmsystem.h> 
 #include "support.h"
 #include "cgmath.h"		// slee's simple math library
 #include "trackball.h"
@@ -7,8 +9,8 @@
 #include "Box.h"
 #include "Enemy.h"
 #include "Wall.h"
-#include "btBulletCollisionCommon.h"
-#include "btBulletDynamicsCommon.h"
+//#include "btBulletCollisionCommon.h"
+//#include "btBulletDynamicsCommon.h"
 #define stepSize 0.05f
 #define num_boxes 3
 #define num_enemyes 1
@@ -204,7 +206,8 @@ void render()
 		mat4 modelMatrix = mat4::identity();
 		modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
 		modelMatrix = mat4::translate(box.getPosition().x+i, box.getPosition().y+i, box.getPosition().z+i) * modelMatrix;
-
+		modelMatrix = mat4::rotate(vec3(0, 1, 0), box.getXRotation())*modelMatrix;
+		modelMatrix = mat4::rotate(vec3(1, 0, 0), box.getYRotation())*modelMatrix;
 		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 		glDrawArrays(GL_TRIANGLES, 0, box.getMesh()->vertexList.size());
@@ -320,55 +323,36 @@ void reshape(int width, int height)
 
 void mouse(int button, int state, int x, int y)
 {
-	/*if (button == GLUT_RIGHT_BUTTON)
-	{
-		if (state == GLUT_DOWN) {
-			xBefore = x;
-		}
-		else if (state == GLUT_UP){
-
-			vec4 a = vec4((float)xBefore / float(windowWidth - 1), 0, 1, 1).normalize();
-			vec4 b = vec4((float)x / float(windowWidth - 1), 0, 1, 1).normalize();
-
-			float angle = a.dot(b) / (a.length()*b.length());
-			printf("%f", angle);
-			if (x > xBefore){
-				box.setPosition(mat4::rotate(vec3(0, 1, 0), (2 * PI - (angle/5)))*box.getPosition());
-			}
-			else{
-				box.setPosition(mat4::rotate(vec3(0, 1, 0), angle/5)*box.getPosition());
-			}
-
-		}
-	}*/
+	if (button == GLUT_LEFT_BUTTON){
+		PlaySound((LPCWSTR)"../bin/Sounds/Shoot.wav", NULL, SND_FILENAME | SND_LOOP);
+	}
 }
 
 void motion(int x, int y)
 {
-		vec4 a = vec4((float)xBefore / float(windowWidth - 1), 0, 1, 1).normalize();
-		vec4 b = vec4((float)x / float(windowWidth - 1), 0, 1, 1).normalize();
+	static bool just_warped = false;
 
-		float angle = a.dot(b) / (a.length()*b.length());
-		if (x > xBefore){
-			box.setPosition(mat4::rotate(vec3(0, 1, 0), (2 * PI - (angle / 80)))*box.getPosition());
-		}
-		else{
-			box.setPosition(mat4::rotate(vec3(0, 1, 0), angle / 80)*box.getPosition());
-		}
-		xBefore = x;
+	if (just_warped) {
+		just_warped = false;
+		return;
+	}
 
+		int dx = x - windowWidth / 2;
+		int dy = y - windowHeight / 2;
 
-		/*a = vec4(0, (float)yBefore / float(windowWidth - 1), 1, 1).normalize();
-		b = vec4(0, (float)y / float(windowWidth - 1), 1, 1).normalize();
+		if (dx) {
+			box.setXRotation(((float)dx / 1000)+box.getXRotation());
 
-		angle = a.dot(b) / (a.length()*b.length());
-		if (y < yBefore){
-			box.setPosition(mat4::rotate(vec3(1, 0, 0), (2 * PI - (angle / 2000)))*box.getPosition());
 		}
-		else{
-			box.setPosition(mat4::rotate(vec3(1, 0, 0), angle / 2000)*box.getPosition());
+
+		if (dy) {
+			box.setYRotation(((float)dy / 1000) + box.getYRotation());
 		}
-		yBefore = y;*/
+
+		glutWarpPointer(windowWidth / 2, windowHeight / 2);
+
+		just_warped = true;
+	
 
 
 }
@@ -404,6 +388,9 @@ void keyboard(unsigned char key, int x, int y)
 		for (int i = 1; i < 2; i++){
 			box.setPosition(vec4(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z, box.getPosition().w));
 		}
+	}
+	else if (key == 27){
+		exit(0);
 	}
 }
 
@@ -509,8 +496,9 @@ int main(int argc, char* argv[])
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition((screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
 	glutCreateWindow("FPS");
-	//glutSetCursor(GLUT_CURSOR_NONE);
-	//glutWarpPointer(windowHeight / 2, windowWidth / 2);
+	glutSetCursor(GLUT_CURSOR_NONE);
+	glutFullScreen();
+	glutWarpPointer(windowHeight / 2, windowWidth / 2);
 
 	// Register callbacks
 	glutDisplayFunc(display);

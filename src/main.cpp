@@ -7,6 +7,8 @@
 #include "Box.h"
 #include "Enemy.h"
 #include "Wall.h"
+#include "btBulletCollisionCommon.h"
+#include "btBulletDynamicsCommon.h"
 #define stepSize 0.05f
 #define num_boxes 3
 #define num_enemyes 1

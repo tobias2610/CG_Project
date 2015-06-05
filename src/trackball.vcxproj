@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Box.h" />
+    <ClInclude Include="btBulletCollisionCommon.h" />
+    <ClInclude Include="btBulletDynamicsCommon.h" />
     <ClInclude Include="cgmath.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Wall.h" />

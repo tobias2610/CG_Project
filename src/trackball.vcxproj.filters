@@ -67,6 +67,9 @@
     <ClInclude Include="btBulletDynamicsCommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="world.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\bin\shaders\trackball.vert">

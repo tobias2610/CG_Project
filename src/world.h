@@ -70,57 +70,52 @@ public:
 		worldWalls.resize(6 * sizeof(mat4));
 
 		//-------------------------------------------------------front-------------------------------------
-		vec3 position = vec4(0, 0, 0, 0) + addPos;
 		vec3 rotationAxis = vec3(0, 1, 0);
-		float angle = 0.5 * PI;
-		mat4 modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
+		float angle = 0;
+		mat4 modelMatrix = worldWall.calcModelMatrix(vec3(addPos.x, addPos.y, addPos.z), rotationAxis, angle, worldWall.getScale());
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[0] = modelMatrix;
 
 		//-------------------------------------------------------back---------------------------------------
-		position = vec4(0, 0, 10,0) + addPos;
 		angle = PI;
-		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
+		modelMatrix = worldWall.calcModelMatrix(vec3(addPos.x, addPos.y, addPos.z), rotationAxis, angle, worldWall.getScale());
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[1] = modelMatrix;
 
 		//*********************************************left and right wall***********************************************
 		//-----------------------------------------------right--------------------------------------------------
-		position = vec4(5, 0, 5, 0) + addPos;
 		//rotationAxis = vec3(0, 1, 0);
 		angle = 0.5 * PI;
-		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
+		modelMatrix = worldWall.calcModelMatrix(vec3(addPos.x, addPos.y, addPos.z), rotationAxis, angle, worldWall.getScale());
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[2] = modelMatrix;
 		//----------------------------------------------left----------------------------------------------------
 
-		position = vec4(-5, 0, 5, 0) + addPos;
 		angle = -0.5 * PI;
-		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
+		modelMatrix = worldWall.calcModelMatrix(vec3(addPos.x, addPos.y, addPos.z), rotationAxis, angle, worldWall.getScale());
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[3] = modelMatrix;
 
 		//**************************************************bottom and seiling*************************************
-
+		
 		//-------------------------------------------------------bottom------------------------------
-		position = vec4(0, 5, 5, 0) + addPos;
 		rotationAxis = vec3(1, 0, 0);
 		angle = 0.5 * PI;
-		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
+		modelMatrix = worldWall.calcModelMatrix(vec3(addPos.x, addPos.y, addPos.z), rotationAxis, angle, worldWall.getScale());
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[4] = modelMatrix;
 
 
 		//-----------------------------------------seiling--------------------------------------------------
-		position = vec4(0, -5, 5, 0) + addPos;
+		
 		rotationAxis = vec3(1, 0, 0);
 		angle = -0.5 * PI;
-		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
+		modelMatrix = worldWall.calcModelMatrix(vec3(addPos.x, addPos.y, addPos.z), rotationAxis, angle, worldWall.getScale());
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[5] = modelMatrix;

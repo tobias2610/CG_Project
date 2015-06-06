@@ -68,7 +68,7 @@ public:
 	virtual vec4 getPosition(){
 		return position;
 	}
-	virtual float getScale(){
+	float getScale(){
 		return scale;
 	}
 	virtual void setPosition(vec4 pPos){

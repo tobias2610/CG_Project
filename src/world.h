@@ -2,13 +2,16 @@
 #include "cgmath.h"
 #include "Wall.h"
 #include "Object.h"
+#include "Enemy.h"
 #pragma once
 class World : public Object
 {
 private:
 	float angleX;
 	float angleY;
-	std::map<char*,Object> surroundings;
+	std::vector<mat4> surroundings;
+	std::vector<mat4> worldWalls;
+	std::vector<mat4> enemies;
 	Wall wall;
 	std::vector<vec4> positions;
 	std::vector<mat4> wallModelMat;

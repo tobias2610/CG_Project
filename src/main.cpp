@@ -35,6 +35,8 @@ GLuint		textureObject = 0;
 Light		light;
 Material	material;
 std::vector<Object> objects;
+std::vector<Wall> Map;
+std::vector<Enemy> Enemys;
 int xBefore=0;
 int yBefore = 0;
 //*******************************************************************
@@ -105,7 +107,8 @@ void render()
 			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
 			//	modelMatrix = mat4::rotate(vec3(0, 1, 0), (1 / 2.0 * PI));
 			modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z) * modelMatrix;
-
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), wall.getXRotation())*modelMatrix;
+			modelMatrix = mat4::rotate(vec3(1, 0, 0), wall.getYRotation())*modelMatrix;
 			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 			glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
@@ -115,7 +118,8 @@ void render()
 			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
 			modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI));
 			modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z + 10) * modelMatrix;
-
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), wall.getXRotation())*modelMatrix;
+			modelMatrix = mat4::rotate(vec3(1, 0, 0), wall.getYRotation())*modelMatrix;
 			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 			glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
@@ -139,7 +143,8 @@ void render()
 			modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
 			modelMatrix = mat4::rotate(vec3(0, 1, 0), -(0.5 * PI));
 			modelMatrix = mat4::translate(wall.getPosition().x - 5, wall.getPosition().y, wall.getPosition().z + 5) * modelMatrix;
-
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), wall.getXRotation())*modelMatrix;
+			modelMatrix = mat4::rotate(vec3(1, 0, 0), wall.getYRotation())*modelMatrix;
 			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 			glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
@@ -379,7 +384,6 @@ void keyboard(unsigned char key, int x, int y)
 		for (int i = 1; i < 2; i++){
 			box.setPosition(vec4(box.getPosition().x, box.getPosition().y, box.getPosition().z + stepSize,box.getPosition().w));
 			wall.setPosition(vec4(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z + stepSize, wall.getPosition().w));
-
 		}
 	}
 	else if (key == 's' || key == 'S'){
@@ -469,6 +473,17 @@ bool userInit()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+
+	/*Map.resize(num_Walls*sizeof(Wall));
+	Map[0] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
+	Map[1] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
+	Map[2] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
+	Map[3] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
+	Map[4] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
+	Map[5] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);*/
+
+
 
 	objects.resize(2 * sizeof(Object));
 	objects[0] = ak;

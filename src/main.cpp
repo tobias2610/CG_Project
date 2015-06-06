@@ -823,7 +823,7 @@ int main(int argc, char* argv[])
 	// init and check GLEW, version, extensions
 	if (!initExtensions()){ printf("Failed to init extensions.\n"); return 0; }
 	// create and compile shaders/program
-	if (!initShaders("shaders/trackball.vert", "shaders/trackball.frag")){ system("pause"); printf("Failed to init program and shaders\n"); return 0; }
+	if (!initShaders("shaders/trackball.vert", "shaders/trackball.frag")){ printf("Failed to init program and shaders\n"); return 0; }
 	// user initialization
 	if (!userInit()){ printf("Failed to userInit()\n"); return 0; }
 	// Start rendering loop

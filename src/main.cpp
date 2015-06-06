@@ -414,13 +414,16 @@ void motion(int x, int y)
 
 		if (dx) {
 			box.setXRotation(((float)dx / 1000)+box.getXRotation());
-			wall.setXRotation(((float)dx / 1000) + wall.getXRotation());
-
+			/*std::vector<mat4> wWalls = world->getWorldWalls();
+*/
+			worldWall.setXRotation(((float)dx / 1000) + worldWall.getXRotation());
+			world->setWorldWalls(worldWall);
 		}
 
 		if (dy) {
 			box.setYRotation(((float)dy / 1000) + box.getYRotation());
-			wall.setYRotation(((float)dy / 1000) + wall.getYRotation());
+			worldWall.setYRotation(((float)dy / 1000) + worldWall.getYRotation());
+			world->setWorldWalls(worldWall);
 
 		}
 
@@ -453,12 +456,14 @@ void keyboard(unsigned char key, int x, int y)
 		for (int i = 1; i < 2; i++){
 			box.setPosition(box.getPosition()+a*stepSize);
 			worldWall.setPosition(worldWall.getPosition() + a*stepSize);
+			world->setWorldWalls(worldWall);
 		}
 	}
 	else if (key == 's' || key == 'S'){
 		for (int i = 1; i < 2; i++){
 			box.setPosition(box.getPosition() - a*stepSize);
 			worldWall.setPosition(worldWall.getPosition() - a*stepSize);
+			world->setWorldWalls(worldWall);
 
 		}
 	}
@@ -466,6 +471,7 @@ void keyboard(unsigned char key, int x, int y)
 		for (int i = 1; i < 2; i++){
 			box.setPosition(box.getPosition() + b*stepSize);
 			worldWall.setPosition(worldWall.getPosition() + b*stepSize);
+			world->setWorldWalls(worldWall);
 
 		}
 	}
@@ -473,7 +479,7 @@ void keyboard(unsigned char key, int x, int y)
 		for (int i = 1; i < 2; i++){
 			box.setPosition(vec4(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z, box.getPosition().w));
 			worldWall.setPosition(vec4(worldWall.getPosition().x - stepSize, worldWall.getPosition().y, worldWall.getPosition().z, worldWall.getPosition().w));
-
+			world->setWorldWalls(worldWall);
 		}
 	}
 	else if (key == 27){
@@ -524,7 +530,7 @@ bool userInit()
 
 	world = new World(wall, enemy, worldWall);
 	worldInit();
-	world->setWorldWalls(wall);
+	world->setWorldWalls(worldWall);
 
 	// create a vertex buffer
 	glGenBuffers(1, &worldWall.getMesh()->vertexBuffer);

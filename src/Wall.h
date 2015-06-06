@@ -32,6 +32,7 @@ public:
 	void setYRotation(float dy){
 		angleY = dy;
 	}
+	
 
 	~Wall()
 	{

@@ -370,6 +370,10 @@ void keyboard(unsigned char key, int x, int y)
 			world->setPosition(world->getPosition() - b*stepSize);
 		}
 	}
+	else if (key == 'r' || key == 'R'){
+
+		engine->play2D("../bin/Sounds/reload.wav");
+	}
 	else if (key == 27){
 		exit(0);
 	}

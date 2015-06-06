@@ -154,12 +154,18 @@ void render()
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	mat4 modelMatrix = mat4::identity();
-	modelMatrix = mat4::rotate(vec3(0, 0, 1), PI)*modelMatrix;
-	modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI / 2)*modelMatrix;
-	modelMatrix = mat4::translate(-camera.at) * modelMatrix;
-	modelMatrix = mat4::scale(maze.getScale(), maze.getScale(), maze.getScale()) * modelMatrix;
-	modelMatrix = mat4::translate(maze.getPosition().x, maze.getPosition().y, maze.getPosition().z) * modelMatrix;
+	//modelMatrix = mat4::rotate(vec3(0, 0, 1), PI)*modelMatrix;
+	//modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI / 2)*modelMatrix;
+	//modelMatrix = mat4::translate(-camera.at) * modelMatrix;
 
+	//modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	//modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	//modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+
+	modelMatrix = mat4::scale(maze.getScale(), maze.getScale(), maze.getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(maze.getPosition().x + world->getPosition().x, maze.getPosition().y + world->getPosition().y, maze.getPosition().z + world->getPosition().z) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
 	
 
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
@@ -689,8 +695,8 @@ bool userInit()
 	}
 	//wallBrown = Wall(100.f, vec3(-25.f, 15.f, -60.f), "../bin/Images/wallBrown.jpg", "Wall");
 	//worldWall = Wall(100.f, vec3(48.f, 15.f, -48.f), "../bin/Images/wall_texture.jpg", "Wall");
-	maze = Maze(0.006f, vec3(0, 0, 0), "../bin/Images/wall_texture.jpg", "../bin/Mods/Maze.obj");
-	box = Box(2.f, vec3(10.f, -5.f, -5.f), "../bin/Images/Box.jpg", "Box");
+	maze = Maze(1.f, vec3(0.f, -1.f, 0.f), "../bin/Images/wall_texture.jpg", "../bin/Mods/Maze.obj");
+	box = Box(0.5f, vec3(0.f, -1.f, 0.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 	text = Overlay("../bin/Images/Tex_1.jpg");

@@ -11,8 +11,8 @@
 #include "Wall.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
-#define stepSize 0.05f
-#define num_boxes 3
+#define stepSize 0.25f
+#define num_boxes 1
 #define num_enemyes 1
 #define num_Walls 6
 //*******************************************************************
@@ -77,7 +77,6 @@ void render()
 
 	//*****************************************************World-Walls*********************************************************
 	glBindBuffer(GL_ARRAY_BUFFER, wall.getMesh()->vertexBuffer);
-
 	// bind vertex position buffer
 	GLuint vertexPositionLoc = glGetAttribLocation(program, "position");
 	glEnableVertexAttribArray(vertexPositionLoc);
@@ -332,7 +331,7 @@ void reshape(int width, int height)
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON){
-		PlaySound((LPCWSTR)"../bin/Sounds/Shoot.wav", NULL, SND_FILENAME);
+		//PlaySound((LPCWSTR)"../bin/Sounds/Shoot.wav", NULL, SND_FILENAME);
 	}
 }
 
@@ -380,23 +379,28 @@ void idle()
 
 void keyboard(unsigned char key, int x, int y)
 {
+
+	vec4 a = mat4(cos((2 * PI - box.getXRotation())), 0, (sin((2 * PI - box.getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - box.getXRotation())), 0.f, cos((2 * PI - box.getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
+	vec4 b = mat4(cos((box.getXRotation())), 0, (sin((box.getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((box.getXRotation())), 0.f, cos((box.getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
+
+
 	if (key == 'w' || key == 'W' ){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec4(box.getPosition().x, box.getPosition().y, box.getPosition().z + stepSize,box.getPosition().w));
-			wall.setPosition(vec4(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z + stepSize, wall.getPosition().w));
+			box.setPosition(box.getPosition()+a*stepSize);
+			wall.setPosition(wall.getPosition() + a*stepSize);
 		}
 	}
 	else if (key == 's' || key == 'S'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec4(box.getPosition().x, box.getPosition().y, box.getPosition().z - stepSize, box.getPosition().w));
-			wall.setPosition(vec4(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z - stepSize, wall.getPosition().w));
+			box.setPosition(box.getPosition() - a*stepSize);
+			wall.setPosition(wall.getPosition() - a*stepSize);
 
 		}
 	}
 	else if (key == 'a' || key == 'A'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec4(box.getPosition().x + stepSize, box.getPosition().y, box.getPosition().z, box.getPosition().w));
-			wall.setPosition(vec4(wall.getPosition().x + stepSize, wall.getPosition().y, wall.getPosition().z, wall.getPosition().w));
+			box.setPosition(box.getPosition() + b*stepSize);
+			wall.setPosition(wall.getPosition() + b*stepSize);
 
 		}
 	}
@@ -447,7 +451,7 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 bool userInit()
 {
 	wall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
-	box = Box(1.f, vec3(0.f, 0.f, -5.f), "../bin/Images/Box.jpg", NULL);
+	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", NULL);
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", NULL);
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 

@@ -12,6 +12,7 @@ uniform vec4 lightPosition, Ia, Id, Is;
 // material properties
 uniform vec4	Ka, Kd, Ks;
 uniform float	shininess;
+uniform int		shininessT;
 
 uniform mat4 viewMatrix;
 
@@ -31,6 +32,11 @@ void main()
 
 	//gl_FragColor = Ira + Ird + Irs;
 	//gl_FragColor = vec4(1.f,1.f,1.f,1.f);//vec4(normalize(norm), 1.0);
-	gl_FragColor = texture2D( TEX, tc ) + Ira + Ird + Irs; // sampling color from texture
+	if(shininessT==1){
+		gl_FragColor = texture2D( TEX, tc ) + Ira + Ird + Irs; // sampling color from texture
+	}else{
+		gl_FragColor = texture2D( TEX, tc );
+	}
+	
 
 }

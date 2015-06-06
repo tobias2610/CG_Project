@@ -38,7 +38,7 @@ bool		bMouseLButtonDown = false;
 Camera		camera;
 AK			ak;
 Aim			aim;
-Box			box;
+Box			box[num_boxes];
 Wall		wallBrown;
 Wall		worldWall;
 Enemy		enemy[num_enemyes];
@@ -306,7 +306,7 @@ void render()
 	glDrawArrays(GL_TRIANGLES, 0, wallBrown.getMesh()->vertexList.size());
 
 	//*****************************************************BOX*********************************************************
-	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, box[0].getMesh()->vertexBuffer);
 
 	// bind vertex position buffer
 	vertexPositionLoc = glGetAttribLocation(program, "position");
@@ -323,31 +323,31 @@ void render()
 	glEnableVertexAttribArray(vertexTexlLoc);
 	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
 
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, box.getImageWidth(), box.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, box.getImage());
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, box[0].getImageWidth(), box[0].getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, box[0].getImage());
 
-	for (int k = 1, w = box.getImageWidth() >> 1, h = box.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+	for (int k = 1, w = box[0].getImageWidth() >> 1, h = box[0].getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	for (int i = 0; i < 1; i++){
-		if (box.getPosition().z<0)
-			box.setPosition(box.getPosition() + vec4(0, 0, 1.f, 0.f)*0.01f*(float)frame);
+		if (box[i].getPosition().z<0)
+			box[i].setPosition(box[i].getPosition() + vec4(0, 0, 1.f, 0.f)*0.01f*(float)frame);
 		else{
-			box.setPosition(vec4(1 + (float)i, 0, -200, 0));
+			box[i].setPosition(vec4(1 + (float)i, 0, -200, 0));
 			ak.damage(10);
 		}
 		mat4 modelMatrix = mat4::identity();
-	//	modelMatrix = mat4::translate(box.getPosition().x + world->getPosition().x);
-		modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
-		modelMatrix = mat4::translate(box.getPosition().x + world->getPosition().x, box.getPosition().y + world->getPosition().y, box.getPosition().z + world->getPosition().z) * modelMatrix;
+	//	modelMatrix = mat4::translate(box[i].getPosition().x + world->getPosition().x);
+		modelMatrix = mat4::scale(box[i].getScale(), box[i].getScale(), box[i].getScale()) * modelMatrix;
+		modelMatrix = mat4::translate(box[i].getPosition().x + world->getPosition().x, box[i].getPosition().y + world->getPosition().y, box[i].getPosition().z + world->getPosition().z) * modelMatrix;
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
 
-		btCollisionShape* boxShape = new btBoxShape(btVector3(box.getPosition().x, box.getPosition().y, box.getPosition().z));
+		btCollisionShape* boxShape = new btBoxShape(btVector3(box[i].getPosition().x, box[i].getPosition().y, box[i].getPosition().z));
 
 		btDefaultMotionState* motionstate = new btDefaultMotionState(btTransform(
 			btQuaternion(0, 0, 0, 1),
-			btVector3(box.getPosition().x + i, box.getPosition().y + i, box.getPosition().z + i)
+			btVector3(box[i].getPosition().x + i, box[i].getPosition().y + i, box[i].getPosition().z + i)
 			));
 
 		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(
@@ -361,7 +361,7 @@ void render()
 
 		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
-		glDrawArrays(GL_TRIANGLES, 0, box.getMesh()->vertexList.size());
+		glDrawArrays(GL_TRIANGLES, 0, box[i].getMesh()->vertexList.size());
 	}
 
 	//*****************************************************ENEMY**********************************************************************************
@@ -551,7 +551,7 @@ void mouse(int button, int state, int x, int y)
 			for (int i = 0; i < num_enemyes; i++){
 				if (enemy[i].clisionDetect()){
 					for (int j = 0; j < num_boxes; j++){
-						if (!box.clisionDetect() && box.getPosition().z >enemy[i].getPosition().z ){
+						if (!box[j].clisionDetect() && box[j].getPosition().z >enemy[i].getPosition().z ){
 							enemy[i].setHp();
 						}
 					}
@@ -708,10 +708,14 @@ bool userInit()
 	wallBrown = Wall(100.f, vec3(48.f, 20.f, -48.f), "../bin/Images/wallBrown.jpg", "Wall");
 	worldWall = Wall(100.f, vec3(48.f, 15.f, -48.f), "../bin/Images/wall_texture.jpg", "Wall");
 	//maze = Maze(1.f, vec3(0.f, 5.f, 0.f), "../bin/Images/wall_texture.jpg", "../bin/Mods/Maze.obj");
-	box = Box(0.5f, vec3(0.f, 0.f, -20.f), "../bin/Images/Box.jpg", "Box");
+	
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 	text = Overlay("../bin/Images/Tex_1.jpg");
 
+
+	box[0] = Box(0.5f, vec3(0.f, 0.f, -20.f), "../bin/Images/Box.jpg", "Box");
+	box[1] = Box(0.5f, vec3(5.f, 0.f, -50.f), "../bin/Images/Box.jpg", "Box");
+	box[2] = Box(0.5f, vec3(10.f, 0.f, -20.f), "../bin/Images/Box.jpg", "Box");
 
 	enemy[0] = Enemy(0.1f, vec3(0.f, -5.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[1] = Enemy(0.1f, vec3(2.f, -5.f, -10.f), "../bin/Images/Enemy.jpg", "Box");
@@ -752,9 +756,9 @@ bool userInit()
 	glBindBuffer(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexList.size()*sizeof(vertex), &ak.getAim()->getMesh()->vertexList[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &box.getMesh()->vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, box.getMesh()->vertexList.size()*sizeof(vertex), &box.getMesh()->vertexList[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &box[0].getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, box[0].getMesh()->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, box[0].getMesh()->vertexList.size()*sizeof(vertex), &box[0].getMesh()->vertexList[0], GL_STATIC_DRAW);
 
 	glGenBuffers(1, &enemy[0].getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, enemy[0].getMesh()->vertexBuffer);

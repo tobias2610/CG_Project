@@ -41,7 +41,7 @@ Aim			aim;
 Box			box;
 Wall		wallBrown;
 Wall		worldWall;
-Enemy		enemy;
+Enemy		enemy[num_enemyes];
 Maze		maze;
 Trackball	trackball(camera.viewMatrix, 1.0f);
 GLuint		textureObject = 0;
@@ -707,9 +707,12 @@ bool userInit()
 	text = Overlay("../bin/Images/Tex_1.jpg");
 
 
-	enemy[0] = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[1] = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[3] = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[0] = Enemy(0.1f, vec3(0.f, -5.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[1] = Enemy(0.1f, vec3(2.f, -5.f, -10.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[3] = Enemy(0.1f, vec3(2.f, -5.f, -15.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[4] = Enemy(0.1f, vec3(4.f, -5.f, -50.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[5] = Enemy(0.1f, vec3(3.f, -5.f, -45.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[6] = Enemy(0.1f, vec3(5.f, -5.f, -20.f), "../bin/Images/Enemy.jpg", "Box");
 
 	world = new World();
 /*

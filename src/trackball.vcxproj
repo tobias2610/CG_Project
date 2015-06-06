@@ -64,6 +64,7 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="cgmath.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Overlay.h" />
     <ClInclude Include="Wall.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="mesh.h" />

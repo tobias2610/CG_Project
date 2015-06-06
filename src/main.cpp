@@ -14,12 +14,16 @@
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h"
+#include "Overlay.h"
 #define stepSize 0.5f
 #define num_boxes 3
 #define num_enemyes 1
 #define num_Walls 6
 time_t timer;
 irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
+static int menu_id;
+static int submenu_id;
+static int value = 0;
 //*******************************************************************
 // index variables for OpenGL objects
 GLuint	program = 0;					// ID holder for GPU program
@@ -41,7 +45,7 @@ Trackball	trackball(camera.viewMatrix, 1.0f);
 GLuint		textureObject = 0;
 Light		light;
 Material	material;
-std::vector<Object> objects;
+Overlay		text;
 std::vector<Wall> Map;
 std::vector<Enemy> Enemys;
 int xBefore = 0;
@@ -56,6 +60,35 @@ btCollisionDispatcher* dispatcher;
 btSequentialImpulseConstraintSolver* solver;
 btDiscreteDynamicsWorld* dynamicsWorld;
 //*******************************************************************
+
+void drawString(char *string){
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();             //save
+	glLoadIdentity();           //and clear
+	gluOrtho2D(0, 1024, 0, 720);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glColor3f(1, 1, 1); // red font
+
+	glDisable(GL_DEPTH_TEST); //disable depth test so renders on top
+
+	glRasterPos2i(10, 10);
+	void *font = GLUT_BITMAP_HELVETICA_18;
+	for (char* c = string; *c != '\0'; c++) {
+		glutBitmapCharacter(font, *c);
+	}
+
+	glEnable(GL_DEPTH_TEST);     //turn depth test back on
+
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+}
+
+
 void update()
 {
 	// configure projection matrix
@@ -115,7 +148,7 @@ void render()
 	glGenerateMipmap(GL_TEXTURE_2D);
 	//int numWalls = world->getNum_WorldWalls();
 	//std::vector<mat4> worldWalls = world->getWorldWalls();
-	
+
 
 	//*********************front wall**********************
 	mat4 modelMatrix = mat4::identity();
@@ -406,6 +439,14 @@ void render()
 
 	glDrawArrays(GL_TRIANGLES, 0, ak.getMesh()->vertexList.size());
 
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, ak.getImageWidth(), ak.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, text.getImage());
+
+	for (int k = 1, w = ak.getImageWidth() >> 1, h = ak.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	char Overlay[100];
+	sprintf(Overlay, "HP: %d \t\t\t\t %d/%d", ak.getHP() , ak.getBullets(), ak.getBulletStock());
+	drawString(Overlay);
 	// now swap backbuffer with front buffer, and display it
 	glutSwapBuffers();
 	// increment FRAME index
@@ -424,10 +465,13 @@ void worldInit(){
 	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 }
 
+
+
 void display()
 {
 	update();
 	render();
+	
 }
 
 void reshape(int width, int height)
@@ -540,9 +584,11 @@ void keyboard(unsigned char key, int x, int y)
 		if (ak.getBulletStock() > 0){
 			if (ak.getBulletStock() >= ak.getMaxBullet()){
 				ak.setBullets(ak.getMaxBullet());
+				ak.setBulletStock(ak.getBulletStock() - ak.getMaxBullet());
 			}
 			else{
 				ak.setBullets(ak.getBulletStock());
+				ak.setBulletStock(0);
 			}
 			engine->play2D("../bin/Sounds/reload.wav");
 		}
@@ -551,9 +597,9 @@ void keyboard(unsigned char key, int x, int y)
 		}
 
 	}
-	else if (key == 27){
+	/*else if (key == 27){
 		exit(0);
-	}
+	}*/
 }
 
 bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
@@ -590,7 +636,6 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 
 bool userInit()
 {
-
 	time(&timer - 30);
 	if (!engine)
 	{
@@ -602,7 +647,7 @@ bool userInit()
 	box = Box(2.f, vec3(10.f, -5.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
-
+	text = Overlay("../bin/Images/Tex_1.jpg");
 
 	world = new World(wallBrown, enemy, worldWall);
 
@@ -643,13 +688,6 @@ bool userInit()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-
-	objects.resize(2 * sizeof(Object));
-	objects[0] = ak;
-	objects[1] = box;
-	objects[2] = wallBrown;
-	objects[3] = worldWall;
-
 	// init camera
 	camera.eye = vec3(0, 0.2f, 1);
 	camera.at = vec3(0, 0, 0);
@@ -666,10 +704,34 @@ bool userInit()
 	material.ambient = vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	material.diffuse = vec4(0.8f, 0.8f, 0.8f, 1.0f);
 	material.specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	material.shininess = 100.0f;
+	material.shininess = 500.0f;
 
 	return true;
 }
+
+
+void menu(int op) {
+
+	switch (op) {
+	case 1:
+		userInit();
+		break;
+	case 0:
+		exit(0);
+	}
+}
+
+void createMenu(void){
+	
+	submenu_id = glutCreateMenu(menu);    
+	menu_id = glutCreateMenu(menu);
+	glutAddMenuEntry("New Try", 1);
+	glutAddMenuEntry("Quit", 0);     
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
+
+
 
 int main(int argc, char* argv[])
 {
@@ -691,6 +753,7 @@ int main(int argc, char* argv[])
 	glutWarpPointer(windowHeight / 2, windowWidth / 2);
 
 	// Register callbacks
+	createMenu();
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);		// callback when the window is resized
 	glutKeyboardFunc(keyboard);

@@ -23,7 +23,7 @@ private:
 
 public:
 
-	World(Wall sWall, Enemy sEnemy, Wall sworldWall)
+	/*World(Wall sWall, Enemy sEnemy, Wall sworldWall)
 	{
 
 		wall = sWall;
@@ -33,7 +33,7 @@ public:
 		angleY = 0;
 		addPos = vec4(0, 0, 0, 0);
 
-	}
+	}*/
 
 	World(){
 

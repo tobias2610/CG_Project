@@ -38,7 +38,7 @@ Camera		camera;
 AK			ak;
 Aim			aim;
 Box			box;
-Wall		wall;
+Wall		wallBrown;
 Wall		worldWall;
 Enemy		enemy;
 Trackball	trackball(camera.viewMatrix, 1.0f);
@@ -146,10 +146,9 @@ void render()
 	for (int k = 1, w = worldWall.getImageWidth() >> 1, h = worldWall.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
-	int numWalls = world->getNum_WorldWalls();
+	//int numWalls = world->getNum_WorldWalls();
 	//std::vector<mat4> worldWalls = world->getWorldWalls();
-	vec3 XAxis = vec3(1, 0, 0);
-	vec3 YAxis = vec3(0, 1, 0);
+
 
 	//*********************front wall**********************
 	mat4 modelMatrix = mat4::identity();
@@ -231,16 +230,38 @@ void render()
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
 
-	//modelMatrix = mat4::identity();
-	//modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-	////modelMatrix = mat4::translate(0, 3, 0) * modelMatrix;
-	////modelMatrix = mat4::rotate(vec3(0, 1, 0), -(PI / 2)) * modelMatrix;
-	//modelMatrix = mat4::rotate(vec3(1, 0, 0), PI ) * modelMatrix;
-	//modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
-	//modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
-	//modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
-	//glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-	//glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+	//************************************************Brown-Walls****************************************************
+	glBindBuffer(GL_ARRAY_BUFFER, wallBrown.getMesh()->vertexBuffer);
+	// bind vertex position buffer
+	vertexPositionLoc = glGetAttribLocation(program, "position");
+	glEnableVertexAttribArray(vertexPositionLoc);
+	glVertexAttribPointer(vertexPositionLoc, sizeof(vertex().pos) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+	// bind vertex normal buffer
+	vertexNormalLoc = glGetAttribLocation(program, "normal");
+	glEnableVertexAttribArray(vertexNormalLoc);
+	glVertexAttribPointer(vertexNormalLoc, sizeof(vertex().norm) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos)));
+
+	// bind vertex texture buffer
+	vertexTexlLoc = glGetAttribLocation(program, "texcoord");
+	glEnableVertexAttribArray(vertexTexlLoc);
+	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, wallBrown.getImageWidth(), wallBrown.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, wallBrown.getImage());
+
+	for (int k = 1, w = wallBrown.getImageWidth() >> 1, h = wallBrown.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(wallBrown.getScale(), wallBrown.getScale(), wallBrown.getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(50, -25, 15) * modelMatrix;
+	modelMatrix = mat4::translate(wallBrown.getPosition().x + world->getPosition().x, wallBrown.getPosition().y + world->getPosition().y, wallBrown.getPosition().z + world->getPosition().z) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	glDrawArrays(GL_TRIANGLES, 0, wallBrown.getMesh()->vertexList.size());
 
 	//*****************************************************BOX*********************************************************
 	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
@@ -622,14 +643,14 @@ bool userInit()
 		printf("Could not startup engine\n");
 		return 0; // error starting up the engine
 	}
-	//wall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wallBrown.jpg", NULL);
-	worldWall = Wall(100.f, vec3(0.f, 2.f, 1.f), "../bin/Images/wall_texture.jpg", "Wall");
-	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", "Box");
+	wallBrown = Wall(100.f, vec3(-25.f, 15.f, -60.f), "../bin/Images/wallBrown.jpg", "Wall");
+	worldWall = Wall(100.f, vec3(48.f, 15.f, -48.f), "../bin/Images/wall_texture.jpg", "Wall");
+	box = Box(2.f, vec3(10.f, -5.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 	text = Overlay("../bin/Images/Tex_1.jpg");
 
-	world = new World(wall, enemy, worldWall);
+	world = new World(wallBrown, enemy, worldWall);
 
 	worldInit();
 	//world->setWorldWalls(worldWall);
@@ -638,6 +659,10 @@ bool userInit()
 	glGenBuffers(1, &worldWall.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, worldWall.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, worldWall.getMesh()->vertexList.size()*sizeof(vertex), &worldWall.getMesh()->vertexList[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &wallBrown.getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, wallBrown.getMesh()->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, wallBrown.getMesh()->vertexList.size()*sizeof(vertex), &wallBrown.getMesh()->vertexList[0], GL_STATIC_DRAW);
 
 	/*glGenBuffers(1, &wall.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, wall.getMesh()->vertexBuffer);
@@ -727,7 +752,7 @@ int main(int argc, char* argv[])
 	glutSetCursor(GLUT_CURSOR_NONE);
 	glutFullScreen();
 	glutWarpPointer(windowHeight / 2, windowWidth / 2);
-	
+
 	// Register callbacks
 	createMenu();
 	glutDisplayFunc(display);

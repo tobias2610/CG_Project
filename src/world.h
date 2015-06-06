@@ -3,9 +3,8 @@
 #include "Wall.h"
 #include "Object.h"
 #include "Enemy.h"
-#include "AK.h"
 #pragma once
-class World : public Object
+class World
 {
 private:
 	float angleX;
@@ -18,37 +17,42 @@ private:
 	Wall wall;
 	Enemy enemy;
 	Wall worldWall;
-	AK ak;
+	vec4 addPos;
 	
 	
 
 public:
 
-	World(Wall sWall, Enemy sEnemy, Wall sworldWall, AK sAk)
+	World(Wall sWall, Enemy sEnemy, Wall sworldWall)
 	{
 
 		wall = sWall;
 		enemy = sEnemy;
 		worldWall = sworldWall;
-		ak = sAk;
+		angleX = 0;
+		angleY = 0;
+		addPos = vec4(0, 0, 0, 0);
 
 	}
 
 	World(){
 
 	}
-
 	bool clisionDetect(vec3 direct){
 
+	}
+	vec4 getPosition(){
+		return addPos;
+	}
+	void setPosition(vec4 pPos){
+		addPos = pPos;
 	}
 	float getXRotation(){
 		return angleX;
 	}
-
 	float getYRotation(){
 		return angleY;
 	}
-	
 	void setXRotation(float dx){
 		angleX = dx;
 	}
@@ -61,101 +65,64 @@ public:
 	Wall getWall(){
 		return worldWall;
 	}
-	void setAK(AK simAK){
-		ak = simAK;
-	}
-	AK getAK(){
-		return ak;
-	}
 	void setWorldWalls(Wall simplewall){
 		worldWall = simplewall;
 		worldWalls.resize(6 * sizeof(mat4));
 
-
-		//front
-		//mat4 modelMatrix = mat4::identity();
-		//modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-		////	modelMatrix = mat4::rotate(vec3(0, 1, 0), (1 / 2.0 * PI));
-		//modelMatrix = mat4::translate(worldWall.getPosition().x, worldWall.getPosition().y, worldWall.getPosition().z) * modelMatrix;
-		vec3 position = vec3(0,0,0);
+		//-------------------------------------------------------front-------------------------------------
+		vec3 position = vec4(0, 0, 0, 0) + addPos;
 		vec3 rotationAxis = vec3(0, 1, 0);
 		float angle = 0.5 * PI;
 		mat4 modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
-
+		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
+		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[0] = modelMatrix;
 
-		//back
-		/*modelMatrix = mat4::identity();
-		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-		modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI));
-		modelMatrix = mat4::translate(worldWall.getPosition().x, worldWall.getPosition().y, worldWall.getPosition().z + 10) * modelMatrix;
-*/
-		position = vec3(0, 0, 10);
-		//rotationAxis = vec3(0, 1, 0);
+		//-------------------------------------------------------back---------------------------------------
+		position = vec4(0, 0, 10,0) + addPos;
 		angle = PI;
 		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
-
+		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
+		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[1] = modelMatrix;
 
-		//left and right wall
-		//right
-		/*modelMatrix = mat4::identity();
-		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-		modelMatrix = mat4::rotate(vec3(0, 1, 0), (0.5 * PI));
-		modelMatrix = mat4::translate(worldWall.getPosition().x + 5, worldWall.getPosition().y, worldWall.getPosition().z + 5) * modelMatrix;
-*/
-		position = vec3(5, 0, 5);
+		//*********************************************left and right wall***********************************************
+		//-----------------------------------------------right--------------------------------------------------
+		position = vec4(5, 0, 5, 0) + addPos;
 		//rotationAxis = vec3(0, 1, 0);
 		angle = 0.5 * PI;
 		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
+		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
+		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
+		worldWalls[2] = modelMatrix;
+		//----------------------------------------------left----------------------------------------------------
 
-		//worldWalls[1] = modelMatrix;
-
-//		worldWalls[2] = modelMatrix;
-
-
-		//left
-		/*modelMatrix = mat4::identity();
-		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-		modelMatrix = mat4::rotate(vec3(0, 1, 0), -(0.5 * PI));
-		modelMatrix = mat4::translate(worldWall.getPosition().x - 5, worldWall.getPosition().y, worldWall.getPosition().z + 5) * modelMatrix;*/
-
-		position = vec3(-5, 0, 5);
-		//rotationAxis = vec3(0, 1, 0);
+		position = vec4(-5, 0, 5, 0) + addPos;
 		angle = -0.5 * PI;
 		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
-
+		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
+		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[3] = modelMatrix;
 
+		//**************************************************bottom and seiling*************************************
 
-
-		//bottom and seiling
-
-		//bottom
-		/*modelMatrix = mat4::identity();
-		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-		modelMatrix = mat4::rotate(vec3(1, 0, 0), (0.5 * PI));
-		modelMatrix = mat4::translate(worldWall.getPosition().x, worldWall.getPosition().y + 5, worldWall.getPosition().z + 5) * modelMatrix;*/
-
-		position = vec3(0, 5, 5);
+		//-------------------------------------------------------bottom------------------------------
+		position = vec4(0, 5, 5, 0) + addPos;
 		rotationAxis = vec3(1, 0, 0);
 		angle = 0.5 * PI;
 		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
-
+		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
+		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[4] = modelMatrix;
 
 
-		//seiling
-		/*modelMatrix = mat4::identity();
-		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-		modelMatrix = mat4::rotate(vec3(1, 0, 0), -(0.5 * PI));
-		modelMatrix = mat4::translate(worldWall.getPosition().x, worldWall.getPosition().y - 5, worldWall.getPosition().z + 5) * modelMatrix;*/
-
-		position = vec3(0, -5, 5);
+		//-----------------------------------------seiling--------------------------------------------------
+		position = vec4(0, -5, 5, 0) + addPos;
 		rotationAxis = vec3(1, 0, 0);
 		angle = -0.5 * PI;
 		modelMatrix = worldWall.calcModelMatrix(position, rotationAxis, angle);
-
+		modelMatrix = mat4::rotate(vec3(0, 1, 0), angleX)*modelMatrix;
+		modelMatrix = mat4::rotate(vec3(1, 0, 0), angleY)*modelMatrix;
 		worldWalls[5] = modelMatrix;
 	}
 	void initEnemies(){

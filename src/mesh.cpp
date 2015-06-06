@@ -191,3 +191,41 @@ Mesh* loadBox(){
 
 	return pNewMesh;
 }
+
+Mesh* loadWall(){
+	float d = 0.5f;
+	Mesh* pNewMesh = new Mesh();
+	sp::ObjLoader loader = sp::ObjLoader();
+	size_t vertexBufferSize = 6;
+	pNewMesh->vertexList.resize(vertexBufferSize*sizeof(vertex));
+	//front
+	pNewMesh->vertexList[0].pos = vec3(d, d, d);
+	pNewMesh->vertexList[1].pos = vec3(-d, d, d);
+	pNewMesh->vertexList[2].pos = vec3(d, -d, d);
+
+	pNewMesh->vertexList[3].pos = vec3(d, -d, d);
+	pNewMesh->vertexList[4].pos = vec3(-d, d, d);
+	pNewMesh->vertexList[5].pos = vec3(-d, -d, d);
+
+	//normal
+	//front
+	pNewMesh->vertexList[0].norm = vec3(d, d, d).normalize();
+	pNewMesh->vertexList[1].norm = vec3(-d, d, d).normalize();
+	pNewMesh->vertexList[2].norm = vec3(d, -d, d).normalize();
+
+	pNewMesh->vertexList[3].norm = vec3(d, -d, d).normalize();
+	pNewMesh->vertexList[4].norm = vec3(-d, d, d).normalize();
+	pNewMesh->vertexList[5].norm = vec3(-d, -d, d).normalize();
+
+	//tex
+	//front
+	pNewMesh->vertexList[0].tex = vec2(1, 1);
+	pNewMesh->vertexList[1].tex = vec2(0, 1);
+	pNewMesh->vertexList[2].tex = vec2(1, 0);
+
+	pNewMesh->vertexList[3].tex = vec2(1, 0);
+	pNewMesh->vertexList[4].tex = vec2(0, 1);
+	pNewMesh->vertexList[5].tex = vec2(0, 0);
+
+	return pNewMesh;
+}

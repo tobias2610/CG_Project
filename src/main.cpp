@@ -1,5 +1,4 @@
 #include <windows.h> 
-#include <mmsystem.h> 
 #include "support.h"
 #include "cgmath.h"		// slee's simple math library
 #include "trackball.h"
@@ -109,99 +108,13 @@ void render()
 	for (int k = 1, w = worldWall.getImageWidth() >> 1, h = worldWall.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
-
-	//for (int i = 0; i < num_Walls; i += 2){
-	//	//back and Front wall
-	//	if (i == 0){
-	//		//front
-	//		mat4 modelMatrix = mat4::identity();
-	//		modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
-	//		//	modelMatrix = mat4::rotate(vec3(0, 1, 0), (1 / 2.0 * PI));
-	//		modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z) * modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), wall.getXRotation())*modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), wall.getYRotation())*modelMatrix;
-	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-
-	//		glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
-
-	//		//back
-	//		modelMatrix = mat4::identity();
-	//		modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI));
-	//		modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y, wall.getPosition().z + 10) * modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), wall.getXRotation())*modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), wall.getYRotation())*modelMatrix;
-	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-
-	//		glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
-
-
-	//	}
-	//	//left and right wall
-	//	else if (i == 2){
-	//		//right
-	//		mat4 modelMatrix = mat4::identity();
-	//		modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), (0.5 * PI));
-	//		modelMatrix = mat4::translate(wall.getPosition().x + 5, wall.getPosition().y, wall.getPosition().z + 5) * modelMatrix;
-
-	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-
-	//		glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
-
-	//		//left
-	//		modelMatrix = mat4::identity();
-	//		modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), -(0.5 * PI));
-	//		modelMatrix = mat4::translate(wall.getPosition().x - 5, wall.getPosition().y, wall.getPosition().z + 5) * modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), wall.getXRotation())*modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), wall.getYRotation())*modelMatrix;
-	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-
-	//		glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
-
-	//	}
-	//	//bottom and seiling
-	//	else if (i == 4){
-	//		//bottom
-	//		mat4 modelMatrix = mat4::identity();
-	//		modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), (0.5 * PI));
-	//		modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y - 5, wall.getPosition().z + 5) * modelMatrix;
-
-	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-
-	//		glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
-
-	//		//seiling
-	//		modelMatrix = mat4::identity();
-	//		modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), -(0.5 * PI));
-	//		modelMatrix = mat4::translate(wall.getPosition().x, wall.getPosition().y - 5, wall.getPosition().z + 5) * modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), wall.getXRotation())*modelMatrix;
-	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), wall.getYRotation())*modelMatrix;
-
-
-	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-
-	//		glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
-	//	}
-	//	/*mat4 modelMatrix = mat4::identity();
-	//	modelMatrix = mat4::scale(wall.getScale(), wall.getScale(), wall.getScale()) * modelMatrix;
-	//	modelMatrix = mat4::rotate(vec3(0,1,0),(1/2.0 * PI));
-	//	modelMatrix = mat4::translate(wall.getPosition().x + 5, wall.getPosition().y, wall.getPosition().z + 5) * modelMatrix;
-
-	//	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-
-	//	glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
-	//	*/
-	//}
 	int numWalls = world->getNum_WorldWalls();
 	std::vector<mat4> worldWalls = world->getWorldWalls();
 	for (int i = 0; i < numWalls; i++){
-
-			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, worldWalls[i]);
-
+			mat4 modelMatrix = worldWalls[i];
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+			modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 			glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
 	}
 
@@ -229,12 +142,12 @@ void render()
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	for (int i = 0; i < num_boxes; i++){
+	for (int i = 0; i < 1; i++){
 		mat4 modelMatrix = mat4::identity();
 		modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
-		modelMatrix = mat4::translate(box.getPosition().x+i, box.getPosition().y+i, box.getPosition().z+i) * modelMatrix;
-		modelMatrix = mat4::rotate(vec3(0, 1, 0), box.getXRotation())*modelMatrix;
-		modelMatrix = mat4::rotate(vec3(1, 0, 0), box.getYRotation())*modelMatrix;
+		modelMatrix = mat4::translate(box.getPosition().x + world->getPosition().x, box.getPosition().y + world->getPosition().y, box.getPosition().z + world->getPosition().z) * modelMatrix;
+		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+		modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
 
 		btCollisionShape* boxShape = new btBoxShape(btVector3(box.getPosition().x, box.getPosition().y, box.getPosition().z));
 
@@ -318,18 +231,11 @@ void render()
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	float gunRotateX = -ak.getDirection().y;
-	float gunRotateY = -ak.getDirection().x;
-
 	mat4 modelMatrix = mat4::identity();
-	//
-	modelMatrix = mat4::rotate(vec3(0, 0, 1), gunRotateY)*modelMatrix;
-	modelMatrix = mat4::rotate(vec3(1, 0, 0), gunRotateX)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 0, 1), PI)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI / 2)*modelMatrix;
 	modelMatrix = mat4::translate(-camera.at) * modelMatrix;
 	modelMatrix = mat4::scale(ak.getScale(), ak.getScale(), ak.getScale()) * modelMatrix;
-	//modelMatrix = mat4::translate(camera.at) * modelMatrix; 
 	modelMatrix = mat4::translate(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z) * modelMatrix;
 
 
@@ -413,32 +319,15 @@ void motion(int x, int y)
 		int dy = y - windowHeight / 2;
 
 		if (dx) {
-
-
-			box.setXRotation(((float)dx / 1000)+box.getXRotation());
-			/*std::vector<mat4> wWalls = world->getWorldWalls();
-*/
-			//worldWall.setXRotation(((float)dx / 1000) + worldWall.getXRotation());
-			Wall woWall = world->getWall();
-			woWall.setXRotation(((float)dx / 1000) + woWall.getXRotation());
-			world->setWorldWalls(worldWall);
+			world->setXRotation((float)dx / 1000 + world->getXRotation());
 		}
 
 		if (dy) {
-			box.setYRotation(((float)dy / 1000) + box.getYRotation());
-			//worldWall.setYRotation(((float)dy / 1000) + worldWall.getYRotation());
-			//world->setWorldWalls(worldWall);
-			Wall woWall = world->getWall();
-			woWall.setYRotation(((float)dy / 1000) + woWall.getYRotation());
-			world->setWorldWalls(worldWall);
+			world->setYRotation((float)dy / 1000 + world->getYRotation());
 		}
-
 		glutWarpPointer(windowWidth / 2, windowHeight / 2);
-
 		just_warped = true;
-	
-
-
+		world->setWorldWalls(world->getWall());
 }
 
 void move(int key, int x, int y)
@@ -454,39 +343,26 @@ void idle()
 void keyboard(unsigned char key, int x, int y)
 {
 
-	vec4 a = mat4(cos((2 * PI - box.getXRotation())), 0, (sin((2 * PI - box.getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - box.getXRotation())), 0.f, cos((2 * PI - box.getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
-	vec4 b = mat4(cos((box.getXRotation())), 0, (sin((box.getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((box.getXRotation())), 0.f, cos((box.getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
-
-	
-	
+	vec4 a = mat4(cos((2 * PI - world->getXRotation())), 0, (sin((2 * PI - world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - world->getXRotation())), 0.f, cos((2 * PI - world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
+	vec4 b = mat4(cos((world->getXRotation())), 0, (sin((world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((world->getXRotation())), 0.f, cos((world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
 	if (key == 'w' || key == 'W' ){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(box.getPosition() + a*stepSize);
-			worldWall.setPosition(worldWall.getPosition() + a*stepSize);
-			world->setWorldWalls(worldWall);
+			world->setPosition(world->getPosition() + a*stepSize);
 		}
 	}
 	else if (key == 's' || key == 'S'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(box.getPosition() - a*stepSize);
-			worldWall.setPosition(worldWall.getPosition() - a*stepSize);
-			world->setWorldWalls(worldWall);
-
+			world->setPosition(world->getPosition() - a*stepSize);
 		}
 	}
 	else if (key == 'a' || key == 'A'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(box.getPosition() + b*stepSize);
-			worldWall.setPosition(worldWall.getPosition() + b*stepSize);
-			world->setWorldWalls(worldWall);
-
+			world->setPosition(world->getPosition() + b*stepSize);
 		}
 	}
 	else if (key == 'd' || key == 'D'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(box.getPosition() - b*stepSize);
-			worldWall.setPosition(worldWall.getPosition() - b*stepSize);
-			world->setWorldWalls(worldWall);
+			world->setPosition(world->getPosition() - b*stepSize);
 		}
 	}
 	else if (key == 27){
@@ -528,14 +404,14 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 
 bool userInit()
 {
-	wall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wallBrown.jpg", NULL);
-	worldWall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
-
-	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", NULL);
-	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", NULL);
+	//wall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wallBrown.jpg", NULL);
+	worldWall = Wall(10.f, vec3(0.f, 0.f, 0.f), "../bin/Images/wall_texture.jpg", "Wall");
+	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", "Box");
+	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 
 	world = new World(wall, enemy, worldWall);
+	
 	worldInit();
 	world->setWorldWalls(worldWall);
 
@@ -544,10 +420,10 @@ bool userInit()
 	glBindBuffer(GL_ARRAY_BUFFER, worldWall.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, worldWall.getMesh()->vertexList.size()*sizeof(vertex), &worldWall.getMesh()->vertexList[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &wall.getMesh()->vertexBuffer);
+	/*glGenBuffers(1, &wall.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, wall.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, wall.getMesh()->vertexList.size()*sizeof(vertex), &wall.getMesh()->vertexList[0], GL_STATIC_DRAW);
-
+	*/
 	glGenBuffers(1, &ak.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, ak.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, ak.getMesh()->vertexList.size()*sizeof(vertex), &ak.getMesh()->vertexList[0], GL_STATIC_DRAW);
@@ -564,16 +440,6 @@ bool userInit()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-
-	/*Map.resize(num_Walls*sizeof(Wall));
-	Map[0] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
-	Map[1] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
-	Map[2] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
-	Map[3] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
-	Map[4] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);
-	Map[5] = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wall_texture.jpg", NULL);*/
-
 
 
 	objects.resize(2 * sizeof(Object));

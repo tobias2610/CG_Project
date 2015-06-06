@@ -330,7 +330,7 @@ void render()
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	mat4 modelMatrix = mat4::identity();
+	modelMatrix = mat4::identity();
 	modelMatrix = mat4::scale(ak.getAim()->getScale(), ak.getAim()->getScale(), ak.getAim()->getScale()) * modelMatrix;
 	modelMatrix = mat4::translate(ak.getAim()->getPosition().x, ak.getAim()->getPosition().y , ak.getAim()->getPosition().z) * modelMatrix;
 

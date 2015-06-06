@@ -57,7 +57,7 @@ public:
 	}
 	void setWorldWalls(Wall simplewall){
 		worldWall = simplewall;
-		
+		worldWalls.resize(6 * sizeof(mat4));
 		//front
 		mat4 modelMatrix = mat4::identity();
 		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;

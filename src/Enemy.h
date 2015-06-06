@@ -15,8 +15,8 @@ public:
 		HP = 100;
 	}
 
-	bool clisionDetect(vec3 direct){
-
+	bool clisionDetect(){
+		return true;
 	}
 	mat4 calcModelMatrix(vec3 position, vec3 rotationAxis, float angle){
 		mat4 modelMatrix = mat4::identity();
@@ -28,7 +28,12 @@ public:
 		modelMatrix = mat4::translate(getPosition().x + position.x, getPosition().y + position.y, getPosition().z + position.z) * modelMatrix;
 		return modelMatrix;
 	}
-
+	void setHp(){
+		setPosition(vec4(-2.f, -2.f, -20.f, 0.f));
+	}
+	int getHp(){
+		return HP;
+	}
 	~Enemy()
 	{
 	}

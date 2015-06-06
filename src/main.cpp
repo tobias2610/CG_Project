@@ -18,7 +18,7 @@
 #include "Overlay.h"
 #define stepSize 0.5f
 #define num_boxes 3
-#define num_enemyes 7
+#define num_enemyes 13
 #define num_Walls 6
 time_t timer;
 irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
@@ -296,8 +296,19 @@ void render()
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	modelMatrix = mat4::identity();
-	modelMatrix = mat4::scale(wallBrown.getScale(), wallBrown.getScale(), wallBrown.getScale()) * modelMatrix;
-	modelMatrix = mat4::translate(10, 10, -20) * modelMatrix;
+	modelMatrix = mat4::scale(wallBrown.getScale(), wallBrown.getScale()/2, wallBrown.getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(10, -10, -20) * modelMatrix;
+	modelMatrix = mat4::translate(wallBrown.getPosition().x + world->getPosition().x, wallBrown.getPosition().y + world->getPosition().y, wallBrown.getPosition().z + world->getPosition().z) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	glDrawArrays(GL_TRIANGLES, 0, wallBrown.getMesh()->vertexList.size());
+
+
+	modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(wallBrown.getScale(), wallBrown.getScale()/2, wallBrown.getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(-20, -10, -50) * modelMatrix;
 	modelMatrix = mat4::translate(wallBrown.getPosition().x + world->getPosition().x, wallBrown.getPosition().y + world->getPosition().y, wallBrown.getPosition().z + world->getPosition().z) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
@@ -387,8 +398,9 @@ void render()
 	for (int i = 0; i < num_enemyes; i++){
 		if (enemy[i].getHp()>0){
 		mat4 modelMatrix = mat4::identity();
-			modelMatrix = mat4::scale(1, 1.5, enemy[i].getScale()) * modelMatrix;
-			modelMatrix = mat4::translate(enemy[i].getPosition().x + world->getPosition().x, enemy[i].getPosition().y + world->getPosition().y, enemy[i].getPosition().z + world->getPosition().z) * modelMatrix;
+			modelMatrix = mat4::scale(4, 8, enemy[i].getScale()) * modelMatrix;
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI/2))*modelMatrix;
+			modelMatrix = mat4::translate(enemy[i].getPosition().x + world->getPosition().x, enemy[i].getPosition().y + world->getPosition().y, enemy[i].getPosition().z - 5 + world->getPosition().z) * modelMatrix;
 			modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 			modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
 		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
@@ -707,12 +719,18 @@ bool userInit()
 	text = Overlay("../bin/Images/Tex_1.jpg");
 
 
-	enemy[0] = Enemy(0.1f, vec3(0.f, -5.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[1] = Enemy(0.1f, vec3(2.f, -5.f, -10.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[3] = Enemy(0.1f, vec3(2.f, -5.f, -15.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[4] = Enemy(0.1f, vec3(4.f, -5.f, -50.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[5] = Enemy(0.1f, vec3(3.f, -5.f, -45.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[6] = Enemy(0.1f, vec3(5.f, -5.f, -20.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[0] = Enemy(0.1f, vec3(0.f, -5.f, -60.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[1] = Enemy(0.1f, vec3(60.f, -5.f, -70.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[3] = Enemy(0.1f, vec3(28.f, -5.f, -15.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[4] = Enemy(0.1f, vec3(14.f, -5.f, -50.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[5] = Enemy(0.1f, vec3(30.f, -5.f, -45.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[6] = Enemy(0.1f, vec3(65.f, -5.f, -20.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[7] = Enemy(0.1f, vec3(70.f, -5.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[8] = Enemy(0.1f, vec3(50.f, -5.f, -60.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[9] = Enemy(0.1f, vec3(10.f, -5.f, -20.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[10] = Enemy(0.1f, vec3(40.f, -5.f, -10.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[11] = Enemy(0.1f, vec3(30.f, -5.f, -34.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[12] = Enemy(0.1f, vec3(25.f, -5.f, -40.f), "../bin/Images/Enemy.jpg", "Box");
 
 	world = new World();
 /*

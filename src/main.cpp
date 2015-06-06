@@ -413,6 +413,8 @@ void motion(int x, int y)
 		int dy = y - windowHeight / 2;
 
 		if (dx) {
+
+
 			box.setXRotation(((float)dx / 1000)+box.getXRotation());
 			/*std::vector<mat4> wWalls = world->getWorldWalls();
 */
@@ -451,11 +453,12 @@ void keyboard(unsigned char key, int x, int y)
 	vec4 a = mat4(cos((2 * PI - box.getXRotation())), 0, (sin((2 * PI - box.getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - box.getXRotation())), 0.f, cos((2 * PI - box.getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
 	vec4 b = mat4(cos((box.getXRotation())), 0, (sin((box.getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((box.getXRotation())), 0.f, cos((box.getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
 
-
+	
+	
 	if (key == 'w' || key == 'W' ){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(box.getPosition()+a*stepSize);
-			worldWall.setPosition(worldWall.getPosition() + a*stepSize);
+			box.setPosition(box.getPosition() - b*stepSize);
+			worldWall.setPosition(worldWall.getPosition() - b*stepSize);
 			world->setWorldWalls(worldWall);
 		}
 	}

@@ -396,7 +396,7 @@ void reshape(int width, int height)
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON){
-		//PlaySound((LPCWSTR)"../bin/Sounds/Shoot.wav", NULL, SND_FILENAME);
+		
 	}
 }
 

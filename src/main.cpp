@@ -341,6 +341,12 @@ void render()
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	for (int i = 0; i < 1; i++){
+		if (box.getPosition().z<0)
+			box.setPosition(box.getPosition() + vec4(0, 0, 1.f, 0.f)*0.01f*(float)frame);
+		else{
+			box.setPosition(vec4(1 + (float)i, 0, -200, 0));
+			ak.damage(10);
+		}
 		mat4 modelMatrix = mat4::identity();
 	//	modelMatrix = mat4::translate(box.getPosition().x + world->getPosition().x);
 		modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
@@ -714,7 +720,7 @@ bool userInit()
 	wallBrown = Wall(100.f, vec3(48.f, 20.f, -48.f), "../bin/Images/wallBrown.jpg", "Wall");
 	worldWall = Wall(100.f, vec3(48.f, 15.f, -48.f), "../bin/Images/wall_texture.jpg", "Wall");
 	//maze = Maze(1.f, vec3(0.f, 5.f, 0.f), "../bin/Images/wall_texture.jpg", "../bin/Mods/Maze.obj");
-	box = Box(0.5f, vec3(0.f, -1.f, 0.f), "../bin/Images/Box.jpg", "Box");
+	box = Box(0.5f, vec3(0.f, 0.f, -20.f), "../bin/Images/Box.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 	text = Overlay("../bin/Images/Tex_1.jpg");
 

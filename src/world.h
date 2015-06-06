@@ -21,15 +21,18 @@ private:
 	
 
 public:
-	World(){
 
-	}
-	World(Wall sWall,  Enemy sEnemy, Wall sworldWall) 
+	World(Wall sWall, Enemy sEnemy, Wall sworldWall)
 	{
-		
+
 		wall = sWall;
 		enemy = sEnemy;
 		worldWall = sworldWall;
+
+	}
+
+	World(){
+
 	}
 
 	bool clisionDetect(vec3 direct){

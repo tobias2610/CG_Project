@@ -33,7 +33,6 @@ Box			box;
 Wall		wall;
 Wall		worldWall;
 Enemy		enemy;
-World world;
 Trackball	trackball(camera.viewMatrix, 1.0f);
 GLuint		textureObject = 0;
 Light		light;
@@ -43,6 +42,7 @@ std::vector<Wall> Map;
 std::vector<Enemy> Enemys;
 int xBefore=0;
 int yBefore = 0;
+World  *world;
 
 //World data
 
@@ -196,8 +196,8 @@ void render()
 	//	glDrawArrays(GL_TRIANGLES, 0, wall.getMesh()->vertexList.size());
 	//	*/
 	//}
-	int numWalls = world.getNum_WorldWalls();
-	std::vector<mat4> worldWalls = world.getWorldWalls();
+	int numWalls = world->getNum_WorldWalls();
+	std::vector<mat4> worldWalls = world->getWorldWalls();
 	for (int i = 0; i < numWalls; i++){
 
 			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, worldWalls[i]);
@@ -522,9 +522,9 @@ bool userInit()
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", NULL);
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 
-	world = World(wall, enemy, worldWall);
+	world = new World(wall, enemy, worldWall);
 	worldInit();
-	world.setWorldWalls(wall);
+	world->setWorldWalls(wall);
 
 	// create a vertex buffer
 	glGenBuffers(1, &worldWall.getMesh()->vertexBuffer);

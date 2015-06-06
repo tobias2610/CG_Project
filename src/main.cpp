@@ -639,19 +639,15 @@ bool userInit()
 {
 	time(&timer - 30);
 	if (!engine)
-	{
-		printf("Could not startup engine\n");
-		return 0; // error starting up the engine
-	}
+
 	wallBrown = Wall(100.f, vec3(-25.f, 15.f, -60.f), "../bin/Images/wallBrown.jpg", "Wall");
 	worldWall = Wall(100.f, vec3(48.f, 15.f, -48.f), "../bin/Images/wall_texture.jpg", "Wall");
 	box = Box(2.f, vec3(10.f, -5.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 	text = Overlay("../bin/Images/Tex_1.jpg");
-
 	world = new World(wallBrown, enemy, worldWall);
-
+	
 	worldInit();
 	//world->setWorldWalls(worldWall);
 
@@ -696,7 +692,7 @@ bool userInit()
 	camera.viewMatrix = mat4::lookAt(camera.eye, camera.at, camera.up);
 
 	// init light properties
-	light.position = vec4(0.0f, 0.2f, 1.0f, 0.0f);   // directional light
+	light.position = vec4(0.f, 0.2f, 1.0f, 0.0f);   // directional light
 	light.ambient = vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	light.diffuse = vec4(0.8f, 0.8f, 0.8f, 1.0f);
 	light.specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);

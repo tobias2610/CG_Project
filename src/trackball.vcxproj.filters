@@ -70,6 +70,9 @@
     <ClInclude Include="Overlay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Maze.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\bin\shaders\trackball.vert">

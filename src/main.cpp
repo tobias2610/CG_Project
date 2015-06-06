@@ -14,7 +14,7 @@
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h"
-#define stepSize 0.25f
+#define stepSize 0.5f
 #define num_boxes 3
 #define num_enemyes 1
 #define num_Walls 6
@@ -118,14 +118,96 @@ void render()
 	vec3 XAxis = vec3(1, 0, 0);
 	vec3 YAxis = vec3(0, 1, 0);
 
+	//*********************front wall**********************
 	mat4 modelMatrix = mat4::identity();
 	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-	modelMatrix = mat4::translate(0,0,-20) * modelMatrix;
+	modelMatrix = mat4::translate(0,25,0) * modelMatrix;
 	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+
+	//*********************right wall**********************
+	modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	//modelMatrix = mat4::translate(0, 3, 0) * modelMatrix;
+	modelMatrix = mat4::translate(-25,0,0) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI / 2)) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), -(PI/2)) * modelMatrix;
+	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+
+	//********************left wall****************************
+
+	modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	//modelMatrix = mat4::translate(0, 3, 0) * modelMatrix;
+	modelMatrix = mat4::translate(25, 0, 0) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), -(PI / 2)) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), -(PI / 2)) * modelMatrix;
+	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+
+	
+	////********************top bottom****************************
+
+	modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	//modelMatrix = mat4::translate(0, 3, 0) * modelMatrix;
+	modelMatrix = mat4::translate(0, 0, -25) * modelMatrix;
+	//modelMatrix = mat4::rotate(vec3(0, 1, 0), PI ) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), (PI / 2)) * modelMatrix;
+	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+	
+
+	////********************top wall****************************
+	modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	//modelMatrix = mat4::translate(0, 3, 0) * modelMatrix;
+	modelMatrix = mat4::translate(0, 0, 25) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), PI) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), (PI / 2)) * modelMatrix;
+	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+
+	
+
+	////********************back wall****************************
+	modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(0, 25, 0) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), PI) * modelMatrix;
+	
+	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+
+	//modelMatrix = mat4::identity();
+	//modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	////modelMatrix = mat4::translate(0, 3, 0) * modelMatrix;
+	////modelMatrix = mat4::rotate(vec3(0, 1, 0), -(PI / 2)) * modelMatrix;
+	//modelMatrix = mat4::rotate(vec3(1, 0, 0), PI ) * modelMatrix;
+	//modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	//modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	//modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+	//glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	//glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
 
 	//*****************************************************BOX*********************************************************
 	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
@@ -495,7 +577,7 @@ bool userInit()
 		return 0; // error starting up the engine
 	}
 	//wall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wallBrown.jpg", NULL);
-	worldWall = Wall(10.f, vec3(0.f, -5.f, 0.f), "../bin/Images/wall_texture.jpg", "Wall");
+	worldWall = Wall(100.f, vec3(0.f, 2.f, 1.f), "../bin/Images/wall_texture.jpg", "Wall");
 	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");

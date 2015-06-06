@@ -114,14 +114,110 @@ void render()
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	int numWalls = world->getNum_WorldWalls();
-	std::vector<mat4> worldWalls = world->getWorldWalls();
-	for (int i = 0; i < numWalls; i++){
-		mat4 modelMatrix = worldWalls[i];
+	//std::vector<mat4> worldWalls = world->getWorldWalls();
+	vec3 XAxis = vec3(1, 0, 0);
+	vec3 YAxis = vec3(0, 1, 0);
+
+	mat4 modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+			modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+			glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+	
+	//for (int i = 0; i < numWalls; i+=2){
+		//************************front and Back
+		/*if (i == 0){
+			float angle = 0;*/
+			//mat4 modelMatrix = mat4::identity();
+			////modelMatrix = mat4::translate(0.f, 0.f, 0.f) * modelMatrix;
+			//modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+			////modelMatrix = mat4::rotate(YAxis, angle)*modelMatrix;
+			//modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+			//modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+			//modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+
+			//glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+			//glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+
+
+
+
+	//		//*********************Back******************
+	//		modelMatrix = mat4::identity();
+	//		modelMatrix = mat4::translate(worldWall.getPosition().x + 0.f, worldWall.getPosition().y + 0.f, worldWall.getPosition().z - 2.f)* modelMatrix;
+	//		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;		
+	//		modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y , worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+
+	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	//		glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+	////	}
+	//	////***********************left & right*********************
+	//		modelMatrix = mat4::identity();
+	//		modelMatrix = mat4::translate(worldWall.getPosition().x - 5.f, worldWall.getPosition().x + 0.f, worldWall.getPosition().x + 5.f)* modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), PI / 2);
+	//		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	//		modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+
+	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	//		glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+	//	//	//*********************Left******************
+	//	//	modelMatrix = mat4::identity();
+	//		modelMatrix = mat4::translate(-5.f, 0.f, 5.f)* modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), -(PI / 2));
+	//		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	//		modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+
+	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	//		glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+	//	//}
+	//	////***********************bottom & seiling*********************
+	//	//else if (i == 4){
+	//	//	float angle = 0.5 * PI;
+	//		modelMatrix = mat4::translate(0.f, -5.f, 5.f)* modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), (PI / 2));
+	//		modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	//		modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+	//		modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+
+	//		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+	//		glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+
+		//	//*********************Seiling******************
+		//	angle = -0.5 * PI;
+		//	modelMatrix = mat4::identity();
+		//	modelMatrix = mat4::rotate(XAxis, angle)*modelMatrix;
+		//	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+		//	
+		//	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
+		//	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+		//	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+
+		//	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+		//	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+		//}
+		/*mat4 modelMatrix = mat4::identity();
+		modelMatrix = mat4::scale(box.getScale(), box.getScale(), box.getScale()) * modelMatrix;
+		modelMatrix = mat4::translate(box.getPosition().x + world->getPosition().x, box.getPosition().y + world->getPosition().y, box.getPosition().z + world->getPosition().z) * modelMatrix;
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
-		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-		glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
-	}
+
+*/
+			/*mat4 modelMatrix = worldWalls[i];
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+			modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;*/
+			
+	//}
+
+
 
 	//*****************************************************BOX*********************************************************
 	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
@@ -234,7 +330,7 @@ void render()
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	mat4 modelMatrix = mat4::identity();
+	modelMatrix = mat4::identity();
 	modelMatrix = mat4::scale(ak.getAim()->getScale(), ak.getAim()->getScale(), ak.getAim()->getScale()) * modelMatrix;
 	modelMatrix = mat4::translate(ak.getAim()->getPosition().x, ak.getAim()->getPosition().y , ak.getAim()->getPosition().z) * modelMatrix;
 
@@ -349,7 +445,7 @@ void mouse(int button, int state, int x, int y)
 			//munition leer nachladen!!!!
 			//engine->play2D("../bin/Sounds/Shoot.wav");
 		}
-
+		
 
 	}
 }
@@ -363,19 +459,19 @@ void motion(int x, int y)
 		return;
 	}
 
-	int dx = x - windowWidth / 2;
-	int dy = y - windowHeight / 2;
+		int dx = x - windowWidth / 2;
+		int dy = y - windowHeight / 2;
 
-	if (dx) {
-		world->setXRotation((float)dx / 1000 + world->getXRotation());
-	}
+		if (dx) {
+			world->setXRotation((float)dx / 1000 + world->getXRotation());
+		}
 
-	if (dy) {
-		world->setYRotation((float)dy / 1000 + world->getYRotation());
-	}
-	glutWarpPointer(windowWidth / 2, windowHeight / 2);
-	just_warped = true;
-	world->setWorldWalls(world->getWall());
+		if (dy) {
+			world->setYRotation((float)dy / 1000 + world->getYRotation());
+		}
+		glutWarpPointer(windowWidth / 2, windowHeight / 2);
+		just_warped = true;
+		//world->setWorldWalls(world->getWall());
 }
 
 void move(int key, int x, int y)
@@ -399,32 +495,36 @@ void keyboard(unsigned char key, int x, int y)
 			engine->play2D("../bin/Sounds/walk.wav");
 			time(&timer);
 		}
-		world->setPosition(world->getPosition() + a*stepSize);
-	}
+			world->setPosition(world->getPosition() + a*stepSize);
+			//world->setWorldWalls(world->getWall());
+		}
 	else if (key == 's' || key == 'S'){
 		time(&timeT);
 		if (difftime(timeT, timer) >= 14){
 			engine->play2D("../bin/Sounds/walk.wav");
 			time(&timer);
 		}
-		world->setPosition(world->getPosition() - a*stepSize);
-	}
+			world->setPosition(world->getPosition() - a*stepSize);
+			//world->setWorldWalls(world->getWall());
+		}
 	else if (key == 'a' || key == 'A'){
 		time(&timeT);
 		if (difftime(timeT, timer) >= 14){
 			engine->play2D("../bin/Sounds/walk.wav");
 			time(&timer);
 		}
-		world->setPosition(world->getPosition() + b*stepSize);
-	}
+			world->setPosition(world->getPosition() + b*stepSize);
+			//world->setWorldWalls(world->getWall());
+		}
 	else if (key == 'd' || key == 'D'){
 		time(&timeT);
 		if (difftime(timeT, timer) >= 14){
 			engine->play2D("../bin/Sounds/walk.wav");
 			time(&timer);
 		}
-		world->setPosition(world->getPosition() - b*stepSize);
-	}
+			world->setPosition(world->getPosition() - b*stepSize);
+			//world->setWorldWalls(world->getWall());
+		}
 	else if (key == 'r' || key == 'R'){
 		if (ak.getBulletStock() > 0){
 			if (ak.getBulletStock() >= ak.getMaxBullet()){
@@ -491,12 +591,12 @@ bool userInit()
 	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
-	
+
 
 	world = new World(wall, enemy, worldWall);
-
+	
 	worldInit();
-	world->setWorldWalls(worldWall);
+	//world->setWorldWalls(worldWall);
 
 	// create a vertex buffer
 	glGenBuffers(1, &worldWall.getMesh()->vertexBuffer);
@@ -510,7 +610,7 @@ bool userInit()
 	glGenBuffers(1, &ak.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, ak.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, ak.getMesh()->vertexList.size()*sizeof(vertex), &ak.getMesh()->vertexList[0], GL_STATIC_DRAW);
-
+	
 	glGenBuffers(1, &ak.getAim()->getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexList.size()*sizeof(vertex), &ak.getAim()->getMesh()->vertexList[0], GL_STATIC_DRAW);
@@ -567,7 +667,7 @@ int main(int argc, char* argv[])
 
 	windowWidth = 1280;
 	windowHeight = 720;
-
+	
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition((screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
 	glutCreateWindow("FPS");

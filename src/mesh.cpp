@@ -195,7 +195,6 @@ Mesh* loadBox(){
 Mesh* loadWall(){
 	float d = 0.5f;
 	Mesh* pNewMesh = new Mesh();
-	sp::ObjLoader loader = sp::ObjLoader();
 	size_t vertexBufferSize = 6;
 	pNewMesh->vertexList.resize(vertexBufferSize*sizeof(vertex));
 	//front
@@ -228,4 +227,47 @@ Mesh* loadWall(){
 	pNewMesh->vertexList[5].tex = vec2(0, 0);
 
 	return pNewMesh;
+}
+
+Mesh* loadCircle(){
+	const int size = 32;
+	float r = 1.f;
+	int i;
+	vec3 vertices[size + 1];
+	vertices[0] = vec4(0.f, 0.f, 0.f, 0.f); 
+	vertices[1] = vec4(0.f, -r, 0.f, 0.f);
+	for (i = 2; i < size + 1; i++){
+		vec4 a = mat4(cos((PI * 2 / size)), -(sin((PI * 2 / size))), 0.f, 0.f, sin((PI * 2 / size)), cos((PI * 2 / size)), 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(vertices[i - 1].x, vertices[i - 1].y, vertices[i - 1].z,0));
+		vertices[i] = vec3(a.x, a.y, a.z);
+	}
+
+	Mesh* pNewMesh = new Mesh();
+	size_t vertexBufferSize = size*3;
+	pNewMesh->vertexList.resize(vertexBufferSize*sizeof(vertex));
+	for (i = 0; i<size * 3; i = i + 3){
+		pNewMesh->vertexList[i].pos = vertices[0];
+	}
+	int counter = 1;
+	for (i = 1; i<size * 3; i = i + 3){
+		pNewMesh->vertexList[i].pos = vertices[counter];
+		counter++;
+	}
+	counter = 2;
+	for (i = 2; i<size * 3; i = i + 3){
+		if (counter > size){
+			pNewMesh->vertexList[i].pos = vertices[ 1];
+		}
+		else{
+			pNewMesh->vertexList[i].pos = vertices[counter];
+		}
+		counter++;
+	}
+	for (i = 0; i < size * 3; i++){
+		pNewMesh->vertexList[i].tex = vec2(1,1);
+	}
+
+
+	return pNewMesh;
+
+
 }

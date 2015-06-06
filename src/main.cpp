@@ -1,4 +1,5 @@
 #include <windows.h> 
+#include "time.h"
 #include "support.h"
 #include "cgmath.h"		// slee's simple math library
 #include "trackball.h"
@@ -9,6 +10,7 @@
 #include "Enemy.h"
 #include "Wall.h"
 #include "World.h"
+#include "Aim.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h"
@@ -16,6 +18,8 @@
 #define num_boxes 3
 #define num_enemyes 1
 #define num_Walls 6
+time_t timer;
+irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
 //*******************************************************************
 // index variables for OpenGL objects
 GLuint	program = 0;					// ID holder for GPU program
@@ -28,6 +32,7 @@ int			frame = 0;	// index of rendering frames
 bool		bMouseLButtonDown = false;
 Camera		camera;
 AK			ak;
+Aim			aim;
 Box			box;
 Wall		wall;
 Wall		worldWall;
@@ -39,7 +44,7 @@ Material	material;
 std::vector<Object> objects;
 std::vector<Wall> Map;
 std::vector<Enemy> Enemys;
-int xBefore=0;
+int xBefore = 0;
 int yBefore = 0;
 World  *world;
 
@@ -116,10 +121,10 @@ void render()
 	mat4 modelMatrix = mat4::identity();
 	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
 	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
-	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
-	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
-	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+			modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+			glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
 	
 	//for (int i = 0; i < numWalls; i+=2){
 		//************************front and Back
@@ -301,6 +306,40 @@ void render()
 		glDrawArrays(GL_TRIANGLES, 0, enemy.getMesh()->vertexList.size());
 	}
 
+	//*****************************************************aim**********************************************************************************
+	glBindBuffer(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexBuffer);
+
+	// bind vertex position buffer
+	vertexPositionLoc = glGetAttribLocation(program, "position");
+	glEnableVertexAttribArray(vertexPositionLoc);
+	glVertexAttribPointer(vertexPositionLoc, sizeof(vertex().pos) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+	// bind vertex normal buffer
+	vertexNormalLoc = glGetAttribLocation(program, "normal");
+	glEnableVertexAttribArray(vertexNormalLoc);
+	glVertexAttribPointer(vertexNormalLoc, sizeof(vertex().norm) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos)));
+
+	// bind vertex texture buffer
+	vertexTexlLoc = glGetAttribLocation(program, "texcoord");
+	glEnableVertexAttribArray(vertexTexlLoc);
+	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, ak.getAim()->getImageWidth(), ak.getAim()->getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, ak.getAim()->getImage());
+
+	for (int k = 1, w = ak.getAim()->getImageWidth() >> 1, h = ak.getAim()->getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	mat4 modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(ak.getAim()->getScale(), ak.getAim()->getScale(), ak.getAim()->getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(ak.getAim()->getPosition().x, ak.getAim()->getPosition().y , ak.getAim()->getPosition().z) * modelMatrix;
+
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+	glDrawArrays(GL_TRIANGLES, 0, ak.getAim()->getMesh()->vertexList.size());
+
+
+
 	//*******************************************AK***********************************************************************
 
 	// bind vertex position buffer
@@ -398,7 +437,16 @@ void reshape(int width, int height)
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON){
+		if (ak.getBullets() > 0){
+			ak.setBullets(ak.getBullets() - 1);
+			engine->play2D("../bin/Sounds/Shoot.wav");
+		}
+		else{
+			//munition leer nachladen!!!!
+			//engine->play2D("../bin/Sounds/Shoot.wav");
+		}
 		
+
 	}
 }
 
@@ -438,32 +486,59 @@ void idle()
 
 void keyboard(unsigned char key, int x, int y)
 {
-
+	time_t timeT;
 	vec4 a = mat4(cos((2 * PI - world->getXRotation())), 0, (sin((2 * PI - world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - world->getXRotation())), 0.f, cos((2 * PI - world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
 	vec4 b = mat4(cos((world->getXRotation())), 0, (sin((world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((world->getXRotation())), 0.f, cos((world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
-	if (key == 'w' || key == 'W' ){
-		for (int i = 1; i < 2; i++){
+	if (key == 'w' || key == 'W'){
+		time(&timeT);
+		if (difftime(timeT, timer) >= 14){
+			engine->play2D("../bin/Sounds/walk.wav");
+			time(&timer);
+		}
 			world->setPosition(world->getPosition() + a*stepSize);
 			//world->setWorldWalls(world->getWall());
 		}
-	}
 	else if (key == 's' || key == 'S'){
-		for (int i = 1; i < 2; i++){
+		time(&timeT);
+		if (difftime(timeT, timer) >= 14){
+			engine->play2D("../bin/Sounds/walk.wav");
+			time(&timer);
+		}
 			world->setPosition(world->getPosition() - a*stepSize);
 			//world->setWorldWalls(world->getWall());
 		}
-	}
 	else if (key == 'a' || key == 'A'){
-		for (int i = 1; i < 2; i++){
+		time(&timeT);
+		if (difftime(timeT, timer) >= 14){
+			engine->play2D("../bin/Sounds/walk.wav");
+			time(&timer);
+		}
 			world->setPosition(world->getPosition() + b*stepSize);
 			//world->setWorldWalls(world->getWall());
 		}
-	}
 	else if (key == 'd' || key == 'D'){
-		for (int i = 1; i < 2; i++){
+		time(&timeT);
+		if (difftime(timeT, timer) >= 14){
+			engine->play2D("../bin/Sounds/walk.wav");
+			time(&timer);
+		}
 			world->setPosition(world->getPosition() - b*stepSize);
 			//world->setWorldWalls(world->getWall());
 		}
+	else if (key == 'r' || key == 'R'){
+		if (ak.getBulletStock() > 0){
+			if (ak.getBulletStock() >= ak.getMaxBullet()){
+				ak.setBullets(ak.getMaxBullet());
+			}
+			else{
+				ak.setBullets(ak.getBulletStock());
+			}
+			engine->play2D("../bin/Sounds/reload.wav");
+		}
+		else{
+			//keine munition mehr
+		}
+
 	}
 	else if (key == 27){
 		exit(0);
@@ -504,12 +579,19 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 
 bool userInit()
 {
+
+	time(&timer - 30);
+	if (!engine)
+	{
+		printf("Could not startup engine\n");
+		return 0; // error starting up the engine
+	}
 	//wall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wallBrown.jpg", NULL);
-	worldWall = Wall(1.f, vec3(0.f, 0.f, 0.f), "../bin/Images/wallgrey.jpg", "Wall");
+	worldWall = Wall(10.f, vec3(0.f, 5.f, 0.f), "../bin/Images/wall_texture.jpg", "Wall");
 	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
-	
+
 
 	world = new World(wall, enemy, worldWall);
 	
@@ -529,6 +611,10 @@ bool userInit()
 	glBindBuffer(GL_ARRAY_BUFFER, ak.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, ak.getMesh()->vertexList.size()*sizeof(vertex), &ak.getMesh()->vertexList[0], GL_STATIC_DRAW);
 	
+	glGenBuffers(1, &ak.getAim()->getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexList.size()*sizeof(vertex), &ak.getAim()->getMesh()->vertexList[0], GL_STATIC_DRAW);
+
 	glGenBuffers(1, &box.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, box.getMesh()->vertexList.size()*sizeof(vertex), &box.getMesh()->vertexList[0], GL_STATIC_DRAW);

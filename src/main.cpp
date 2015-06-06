@@ -303,7 +303,16 @@ void reshape(int width, int height)
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON){
-		engine->play2D("../bin/Sounds/Shoot.wav");
+		if (ak.getBullets() > 0){
+			ak.setBullets(ak.getBullets() - 1);
+			engine->play2D("../bin/Sounds/Shoot.wav");
+		}
+		else{
+			//munition leer nachladen!!!!
+			//engine->play2D("../bin/Sounds/Shoot.wav");
+		}
+		
+		
 	}
 }
 
@@ -371,8 +380,19 @@ void keyboard(unsigned char key, int x, int y)
 		}
 	}
 	else if (key == 'r' || key == 'R'){
-
-		engine->play2D("../bin/Sounds/reload.wav");
+		if (ak.getBulletStock()>0){
+			if (ak.getBulletStock() >= ak.getMaxBullet()){
+				ak.setBullets(ak.getMaxBullet()); 
+			}
+			else{
+				ak.setBullets(ak.getBulletStock());
+			}
+			engine->play2D("../bin/Sounds/reload.wav");
+		}
+		else{
+			//keine munition mehr
+		}
+		
 	}
 	else if (key == 27){
 		exit(0);

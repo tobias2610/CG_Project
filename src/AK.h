@@ -25,6 +25,9 @@ public:
 	}
 	void damage(int damage){
 		HP -= damage;
+		if (HP <= 0){
+			exit(0);
+		}
 	}
 	int getHP(){
 		return HP;

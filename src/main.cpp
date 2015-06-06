@@ -477,7 +477,7 @@ void mouse(int button, int state, int x, int y)
 		}
 		else{
 			//munition leer nachladen!!!!
-			//engine->play2D("../bin/Sounds/Shoot.wav");
+			engine->play2D("../bin/Sounds/empty.wav");
 		}
 
 
@@ -573,6 +573,7 @@ void keyboard(unsigned char key, int x, int y)
 		}
 		else{
 			//keine munition mehr
+			engine->play2D("../bin/Sounds/empty.wav");
 		}
 
 	}

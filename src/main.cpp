@@ -396,7 +396,7 @@ void reshape(int width, int height)
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON){
-		//PlaySound((LPCWSTR)"../bin/Sounds/Shoot.wav", NULL, SND_FILENAME);
+		
 	}
 }
 
@@ -461,8 +461,8 @@ void keyboard(unsigned char key, int x, int y)
 	
 	if (key == 'w' || key == 'W' ){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(box.getPosition() - b*stepSize);
-			worldWall.setPosition(worldWall.getPosition() - b*stepSize);
+			box.setPosition(box.getPosition() + a*stepSize);
+			worldWall.setPosition(worldWall.getPosition() + a*stepSize);
 			world->setWorldWalls(worldWall);
 		}
 	}
@@ -484,8 +484,8 @@ void keyboard(unsigned char key, int x, int y)
 	}
 	else if (key == 'd' || key == 'D'){
 		for (int i = 1; i < 2; i++){
-			box.setPosition(vec4(box.getPosition().x - stepSize, box.getPosition().y, box.getPosition().z, box.getPosition().w));
-			worldWall.setPosition(vec4(worldWall.getPosition().x - stepSize, worldWall.getPosition().y, worldWall.getPosition().z, worldWall.getPosition().w));
+			box.setPosition(box.getPosition() - b*stepSize);
+			worldWall.setPosition(worldWall.getPosition() - b*stepSize);
 			world->setWorldWalls(worldWall);
 		}
 	}

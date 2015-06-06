@@ -37,16 +37,16 @@ public:
 		scale = pScale;
 		position = pPosition;
 		loadPic(pImagePath);
-		if (strcmp(pPath, "Circle") == 0){
-			mesh = loadCircle();
-		}
-		else if (strcmp(pPath,"Box")==0){
+		if (strcmp(pPath,"Box")==0){
+			printf("Box");
 			mesh = loadBox();
 		}
 		else if (strcmp(pPath, "Wall")==0){
+			printf("Wall");
 			mesh = loadWall();
 		}
 		else{
+			printf("Waffe");
 			mesh = loadMesh(pPath);
 		}
 	}

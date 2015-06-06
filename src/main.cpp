@@ -158,7 +158,7 @@ void render()
 
 		btDefaultMotionState* motionstate = new btDefaultMotionState(btTransform(
 			btQuaternion(0, 0, 0, 1),
-			btVector3(box.getPosition().x + i, box.getPosition().y + i, box.getPosition().z + i)
+			btVector3(box.getPosition().x, box.getPosition().y, box.getPosition().z)
 			));
 
 		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(

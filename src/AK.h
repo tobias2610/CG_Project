@@ -10,16 +10,24 @@ private:
 	int maxBullets=30;
 	int bulletStock;
 	Aim aim;
+	int HP;
 public:
 	AK(){
 
 	}
 	AK(float pScale, vec3 pPosition, char* pImagePath, char* path) :Object(pScale,pPosition,pImagePath,path)
 	{
+		HP = 100;
 		bulletStock = 60;
 		bullets = 30;
 		direction = vec3(0,0,1);
 		aim = Aim(0.05f, vec3(0, 0, -10), "../bin/Images/tex_AK.jpg", "Circle");
+	}
+	void damage(int damage){
+		HP -= damage;
+	}
+	int getHP(){
+		return HP;
 	}
 	Aim* getAim(){
 		return &aim;
@@ -50,6 +58,8 @@ public:
 	void shoot(){
 		
 	}
+
+
 
 	~AK()
 	{

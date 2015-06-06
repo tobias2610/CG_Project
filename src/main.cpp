@@ -1,4 +1,5 @@
 #include <windows.h> 
+#include "time.h"
 #include "support.h"
 #include "cgmath.h"		// slee's simple math library
 #include "trackball.h"
@@ -16,6 +17,7 @@
 #define num_boxes 3
 #define num_enemyes 1
 #define num_Walls 6
+time_t timer;
 irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
 //*******************************************************************
 // index variables for OpenGL objects
@@ -352,32 +354,40 @@ void idle()
 
 void keyboard(unsigned char key, int x, int y)
 {
-
+	time_t timeT;
 	vec4 a = mat4(cos((2 * PI - world->getXRotation())), 0, (sin((2 * PI - world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - world->getXRotation())), 0.f, cos((2 * PI - world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
 	vec4 b = mat4(cos((world->getXRotation())), 0, (sin((world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((world->getXRotation())), 0.f, cos((world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
 	if (key == 'w' || key == 'W' ){
-		engine->play2D("../bin/Sounds/walk.wav");
-		for (int i = 1; i < 2; i++){
-			world->setPosition(world->getPosition() + a*stepSize);
+		time(&timeT);
+		if (difftime(timeT,timer) >= 14){
+			engine->play2D("../bin/Sounds/walk.wav");
+			time(&timer);
 		}
+		world->setPosition(world->getPosition() + a*stepSize);
 	}
 	else if (key == 's' || key == 'S'){
-		engine->play2D("../bin/Sounds/walk.wav");
-		for (int i = 1; i < 2; i++){
-			world->setPosition(world->getPosition() - a*stepSize);
+		time(&timeT);
+		if (difftime(timeT, timer) >= 14){
+			engine->play2D("../bin/Sounds/walk.wav");
+			time(&timer);
 		}
+		world->setPosition(world->getPosition() - a*stepSize);
 	}
 	else if (key == 'a' || key == 'A'){
-		engine->play2D("../bin/Sounds/walk.wav");
-		for (int i = 1; i < 2; i++){
-			world->setPosition(world->getPosition() + b*stepSize);
+		time(&timeT);
+		if (difftime(timeT, timer) >= 14){
+			engine->play2D("../bin/Sounds/walk.wav");
+			time(&timer);
 		}
+		world->setPosition(world->getPosition() + b*stepSize);
 	}
 	else if (key == 'd' || key == 'D'){
-		engine->play2D("../bin/Sounds/walk.wav");
-		for (int i = 1; i < 2; i++){
-			world->setPosition(world->getPosition() - b*stepSize);
+		time(&timeT);
+		if (difftime(timeT, timer) >= 14){
+			engine->play2D("../bin/Sounds/walk.wav");
+			time(&timer);
 		}
+		world->setPosition(world->getPosition() - b*stepSize);
 	}
 	else if (key == 'r' || key == 'R'){
 		if (ak.getBulletStock()>0){
@@ -433,8 +443,9 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 
 bool userInit()
 {
-
 	
+	time(&timer-30);
+	printf("%d", timer + 14);
 	if (!engine)
 	{
 		printf("Could not startup engine\n");

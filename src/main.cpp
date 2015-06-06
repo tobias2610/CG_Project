@@ -495,7 +495,7 @@ void render()
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	char Overlay[100];
-	sprintf(Overlay, "HP: %d \t\t\t\t %d/%d", ak.getHP() , ak.getBullets(), ak.getBulletStock());
+	sprintf(Overlay, "HP: %d                               %d/%d", ak.getHP() , ak.getBullets(), ak.getBulletStock());
 	drawString(Overlay);
 	// now swap backbuffer with front buffer, and display it
 	glutSwapBuffers();

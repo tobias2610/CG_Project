@@ -695,7 +695,7 @@ bool userInit()
 	}
 	//wallBrown = Wall(100.f, vec3(-25.f, 15.f, -60.f), "../bin/Images/wallBrown.jpg", "Wall");
 	//worldWall = Wall(100.f, vec3(48.f, 15.f, -48.f), "../bin/Images/wall_texture.jpg", "Wall");
-	maze = Maze(1.f, vec3(0.f, -1.f, 0.f), "../bin/Images/wall_texture.jpg", "../bin/Mods/Maze.obj");
+	maze = Maze(1.f, vec3(0.f, 5.f, 0.f), "../bin/Images/wall_texture.jpg", "../bin/Mods/Maze.obj");
 	box = Box(0.5f, vec3(0.f, -1.f, 0.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");

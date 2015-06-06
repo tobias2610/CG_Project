@@ -16,6 +16,7 @@
 #define num_boxes 3
 #define num_enemyes 1
 #define num_Walls 6
+irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
 //*******************************************************************
 // index variables for OpenGL objects
 GLuint	program = 0;					// ID holder for GPU program
@@ -302,7 +303,7 @@ void reshape(int width, int height)
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON){
-		
+		engine->play2D("../bin/Sounds/Shoot.wav");
 	}
 }
 
@@ -346,21 +347,25 @@ void keyboard(unsigned char key, int x, int y)
 	vec4 a = mat4(cos((2 * PI - world->getXRotation())), 0, (sin((2 * PI - world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - world->getXRotation())), 0.f, cos((2 * PI - world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
 	vec4 b = mat4(cos((world->getXRotation())), 0, (sin((world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((world->getXRotation())), 0.f, cos((world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
 	if (key == 'w' || key == 'W' ){
+		engine->play2D("../bin/Sounds/walk.wav");
 		for (int i = 1; i < 2; i++){
 			world->setPosition(world->getPosition() + a*stepSize);
 		}
 	}
 	else if (key == 's' || key == 'S'){
+		engine->play2D("../bin/Sounds/walk.wav");
 		for (int i = 1; i < 2; i++){
 			world->setPosition(world->getPosition() - a*stepSize);
 		}
 	}
 	else if (key == 'a' || key == 'A'){
+		engine->play2D("../bin/Sounds/walk.wav");
 		for (int i = 1; i < 2; i++){
 			world->setPosition(world->getPosition() + b*stepSize);
 		}
 	}
 	else if (key == 'd' || key == 'D'){
+		engine->play2D("../bin/Sounds/walk.wav");
 		for (int i = 1; i < 2; i++){
 			world->setPosition(world->getPosition() - b*stepSize);
 		}
@@ -404,8 +409,15 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 
 bool userInit()
 {
+
+	
+	if (!engine)
+	{
+		printf("Could not startup engine\n");
+		return 0; // error starting up the engine
+	}
 	//wall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wallBrown.jpg", NULL);
-	worldWall = Wall(10.f, vec3(0.f, 0.f, 0.f), "../bin/Images/wall_texture.jpg", "Wall");
+	worldWall = Wall(10.f, vec3(0.f, 5.f, 0.f), "../bin/Images/wall_texture.jpg", "Wall");
 	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");

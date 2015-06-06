@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <conio.h>
-#include "GL/irrKlang.h"
+#include "irrKlang/irrKlang.h"
 
 #pragma comment( lib, "OpenGL32.lib" )	// link OpenGL32 library
 #pragma comment( lib, "glew32.lib" )	// link glew library

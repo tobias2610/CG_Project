@@ -10,8 +10,8 @@ public:
 	Box(float pScale, vec3 pPosition, char* pImagePath, char* path) :Object(pScale, pPosition, pImagePath, path)
 	{
 	}
-	bool clisionDetect(vec3 direct){
-
+	bool clisionDetect(){
+		return false;
 	}
 	mat4 calcModelMatrix(vec3 position, vec3 rotationAxis, float angle){
 		mat4 modelMatrix = mat4::identity();

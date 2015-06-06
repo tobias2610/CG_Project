@@ -20,6 +20,9 @@
 #define num_Walls 6
 time_t timer;
 irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
+static int menu_id;
+static int submenu_id;
+static int value = 0;
 //*******************************************************************
 // index variables for OpenGL objects
 GLuint	program = 0;					// ID holder for GPU program
@@ -448,9 +451,9 @@ void keyboard(unsigned char key, int x, int y)
 		}
 
 	}
-	else if (key == 27){
+	/*else if (key == 27){
 		exit(0);
-	}
+	}*/
 }
 
 bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
@@ -487,7 +490,6 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 
 bool userInit()
 {
-
 	time(&timer - 30);
 	if (!engine)
 	{
@@ -559,9 +561,34 @@ bool userInit()
 	material.ambient = vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	material.diffuse = vec4(0.8f, 0.8f, 0.8f, 1.0f);
 	material.specular = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	material.shininess = 100.0f;
+	material.shininess = 500.0f;
 
 	return true;
+}
+
+void initOverlay(){
+	glutEstablishOverlay();
+	glutUseLayer(GLUT_LAYER_IN_USE);
+	glutShowOverlay();
+}
+
+void menu(int op) {
+
+	switch (op) {
+	case 1:
+		userInit();
+		break;
+	case 0:
+		exit(0);
+	}
+}
+
+void createMenu(void){
+	submenu_id = glutCreateMenu(menu);    
+	menu_id = glutCreateMenu(menu);
+	glutAddMenuEntry("New Try", 1);
+	glutAddMenuEntry("Quit", 0);     
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
 int main(int argc, char* argv[])
@@ -582,8 +609,9 @@ int main(int argc, char* argv[])
 	glutSetCursor(GLUT_CURSOR_NONE);
 	glutFullScreen();
 	glutWarpPointer(windowHeight / 2, windowWidth / 2);
-
+	
 	// Register callbacks
+	createMenu();
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);		// callback when the window is resized
 	glutKeyboardFunc(keyboard);
@@ -591,6 +619,9 @@ int main(int argc, char* argv[])
 	glutMouseFunc(mouse);
 	glutPassiveMotionFunc(motion);		// callback when the mouse is moving
 	glutIdleFunc(idle);			// idle-time callback
+
+
+	
 
 	// init and check GLEW, version, extensions
 	if (!initExtensions()){ printf("Failed to init extensions.\n"); return 0; }

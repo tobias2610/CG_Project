@@ -117,7 +117,7 @@ void update()
 	glUniform4fv(glGetUniformLocation(program, "Kd"), 1, material.diffuse);
 	glUniform4fv(glGetUniformLocation(program, "Ks"), 1, material.specular);
 	glUniform1f(glGetUniformLocation(program, "shininess"), material.shininess);
-
+	glUniform1i(glGetUniformLocation(program, "shininessT"), 1);
 }
 
 void render()
@@ -482,7 +482,7 @@ void render()
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 	glDrawArrays(GL_TRIANGLES, 0, ak.getMesh()->vertexList.size());
-
+	glUniform1i(glGetUniformLocation(program, "shininessT"), 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, ak.getImageWidth(), ak.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, text.getImage());
 
 	for (int k = 1, w = ak.getImageWidth() >> 1, h = ak.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
@@ -817,7 +817,7 @@ int main(int argc, char* argv[])
 	// init and check GLEW, version, extensions
 	if (!initExtensions()){ printf("Failed to init extensions.\n"); return 0; }
 	// create and compile shaders/program
-	if (!initShaders("shaders/trackball.vert", "shaders/trackball.frag")){ printf("Failed to init program and shaders\n"); return 0; }
+	if (!initShaders("shaders/trackball.vert", "shaders/trackball.frag")){ system("pause"); printf("Failed to init program and shaders\n"); return 0; }
 	// user initialization
 	if (!userInit()){ printf("Failed to userInit()\n"); return 0; }
 	// Start rendering loop

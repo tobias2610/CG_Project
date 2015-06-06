@@ -37,16 +37,16 @@ public:
 		scale = pScale;
 		position = pPosition;
 		loadPic(pImagePath);
-		if (strcmp(pPath,"Box")==0){
-			printf("Box");
+		if (strcmp(pPath, "Circle") == 0){
+			mesh = loadCircle();
+		}
+		else if (strcmp(pPath,"Box")==0){
 			mesh = loadBox();
 		}
 		else if (strcmp(pPath, "Wall")==0){
-			printf("Wall");
 			mesh = loadWall();
 		}
 		else{
-			printf("Waffe");
 			mesh = loadMesh(pPath);
 		}
 	}
@@ -68,7 +68,7 @@ public:
 	virtual vec4 getPosition(){
 		return position;
 	}
-	virtual float getScale(){
+	float getScale(){
 		return scale;
 	}
 	virtual void setPosition(vec4 pPos){

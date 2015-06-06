@@ -10,6 +10,7 @@
 #include "Enemy.h"
 #include "Wall.h"
 #include "World.h"
+#include "Aim.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h"
@@ -31,6 +32,7 @@ int			frame = 0;	// index of rendering frames
 bool		bMouseLButtonDown = false;
 Camera		camera;
 AK			ak;
+Aim			aim;
 Box			box;
 Wall		wall;
 Wall		worldWall;
@@ -42,7 +44,7 @@ Material	material;
 std::vector<Object> objects;
 std::vector<Wall> Map;
 std::vector<Enemy> Enemys;
-int xBefore=0;
+int xBefore = 0;
 int yBefore = 0;
 World  *world;
 
@@ -114,11 +116,11 @@ void render()
 	int numWalls = world->getNum_WorldWalls();
 	std::vector<mat4> worldWalls = world->getWorldWalls();
 	for (int i = 0; i < numWalls; i++){
-			mat4 modelMatrix = worldWalls[i];
-			modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
-			modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
-			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
-			glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
+		mat4 modelMatrix = worldWalls[i];
+		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
+		modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
+		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+		glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
 	}
 
 	//*****************************************************BOX*********************************************************
@@ -208,6 +210,41 @@ void render()
 		glDrawArrays(GL_TRIANGLES, 0, enemy.getMesh()->vertexList.size());
 	}
 
+	//*****************************************************aim**********************************************************************************
+
+	glBindBuffer(GL_ARRAY_BUFFER, aim.getMesh()->vertexBuffer);
+
+	// bind vertex position buffer
+	vertexPositionLoc = glGetAttribLocation(program, "position");
+	glEnableVertexAttribArray(vertexPositionLoc);
+	glVertexAttribPointer(vertexPositionLoc, sizeof(vertex().pos) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), 0);
+
+	// bind vertex normal buffer
+	vertexNormalLoc = glGetAttribLocation(program, "normal");
+	glEnableVertexAttribArray(vertexNormalLoc);
+	glVertexAttribPointer(vertexNormalLoc, sizeof(vertex().norm) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos)));
+
+	// bind vertex texture buffer
+	vertexTexlLoc = glGetAttribLocation(program, "texcoord");
+	glEnableVertexAttribArray(vertexTexlLoc);
+	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, aim.getImageWidth(), aim.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, aim.getImage());
+
+	for (int k = 1, w = aim.getImageWidth() >> 1, h = aim.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	mat4 modelMatrix = mat4::identity();
+	modelMatrix = mat4::scale(aim.getScale(), aim.getScale(), aim.getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(aim.getPosition().x, aim.getPosition().y , aim.getPosition().z) * modelMatrix;
+
+	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+
+	glDrawArrays(GL_TRIANGLES, 0, aim.getMesh()->vertexList.size());
+
+
+
 	//*******************************************AK***********************************************************************
 
 	// bind vertex position buffer
@@ -234,7 +271,7 @@ void render()
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	mat4 modelMatrix = mat4::identity();
+	modelMatrix = mat4::identity();
 	modelMatrix = mat4::rotate(vec3(0, 0, 1), PI)*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), -PI / 2)*modelMatrix;
 	modelMatrix = mat4::translate(-camera.at) * modelMatrix;
@@ -313,8 +350,8 @@ void mouse(int button, int state, int x, int y)
 			//munition leer nachladen!!!!
 			//engine->play2D("../bin/Sounds/Shoot.wav");
 		}
-		
-		
+
+
 	}
 }
 
@@ -327,19 +364,19 @@ void motion(int x, int y)
 		return;
 	}
 
-		int dx = x - windowWidth / 2;
-		int dy = y - windowHeight / 2;
+	int dx = x - windowWidth / 2;
+	int dy = y - windowHeight / 2;
 
-		if (dx) {
-			world->setXRotation((float)dx / 1000 + world->getXRotation());
-		}
+	if (dx) {
+		world->setXRotation((float)dx / 1000 + world->getXRotation());
+	}
 
-		if (dy) {
-			world->setYRotation((float)dy / 1000 + world->getYRotation());
-		}
-		glutWarpPointer(windowWidth / 2, windowHeight / 2);
-		just_warped = true;
-		world->setWorldWalls(world->getWall());
+	if (dy) {
+		world->setYRotation((float)dy / 1000 + world->getYRotation());
+	}
+	glutWarpPointer(windowWidth / 2, windowHeight / 2);
+	just_warped = true;
+	world->setWorldWalls(world->getWall());
 }
 
 void move(int key, int x, int y)
@@ -357,9 +394,9 @@ void keyboard(unsigned char key, int x, int y)
 	time_t timeT;
 	vec4 a = mat4(cos((2 * PI - world->getXRotation())), 0, (sin((2 * PI - world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - world->getXRotation())), 0.f, cos((2 * PI - world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
 	vec4 b = mat4(cos((world->getXRotation())), 0, (sin((world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((world->getXRotation())), 0.f, cos((world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
-	if (key == 'w' || key == 'W' ){
+	if (key == 'w' || key == 'W'){
 		time(&timeT);
-		if (difftime(timeT,timer) >= 14){
+		if (difftime(timeT, timer) >= 14){
 			engine->play2D("../bin/Sounds/walk.wav");
 			time(&timer);
 		}
@@ -390,9 +427,9 @@ void keyboard(unsigned char key, int x, int y)
 		world->setPosition(world->getPosition() - b*stepSize);
 	}
 	else if (key == 'r' || key == 'R'){
-		if (ak.getBulletStock()>0){
+		if (ak.getBulletStock() > 0){
 			if (ak.getBulletStock() >= ak.getMaxBullet()){
-				ak.setBullets(ak.getMaxBullet()); 
+				ak.setBullets(ak.getMaxBullet());
 			}
 			else{
 				ak.setBullets(ak.getBulletStock());
@@ -402,7 +439,7 @@ void keyboard(unsigned char key, int x, int y)
 		else{
 			//keine munition mehr
 		}
-		
+
 	}
 	else if (key == 27){
 		exit(0);
@@ -443,9 +480,8 @@ bool initShaders(const char* vertShaderPath, const char* fragShaderPath)
 
 bool userInit()
 {
-	
-	time(&timer-30);
-	printf("%d", timer + 14);
+
+	time(&timer - 30);
 	if (!engine)
 	{
 		printf("Could not startup engine\n");
@@ -456,9 +492,10 @@ bool userInit()
 	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
+	aim = Aim(0.05f, vec3(0, 0, -10), "../bin/Images/tex_AK.jpg", "Circle");
 
 	world = new World(wall, enemy, worldWall);
-	
+
 	worldInit();
 	world->setWorldWalls(worldWall);
 
@@ -474,7 +511,12 @@ bool userInit()
 	glGenBuffers(1, &ak.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, ak.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, ak.getMesh()->vertexList.size()*sizeof(vertex), &ak.getMesh()->vertexList[0], GL_STATIC_DRAW);
-	
+
+	glGenBuffers(1, &aim.getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, aim.getMesh()->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, aim.getMesh()->vertexList.size()*sizeof(vertex), &aim.getMesh()->vertexList[0], GL_STATIC_DRAW);
+
+
 	glGenBuffers(1, &box.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, box.getMesh()->vertexList.size()*sizeof(vertex), &box.getMesh()->vertexList[0], GL_STATIC_DRAW);
@@ -527,7 +569,7 @@ int main(int argc, char* argv[])
 
 	windowWidth = 1280;
 	windowHeight = 720;
-	
+
 	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition((screenWidth - windowWidth) / 2, (screenHeight - windowHeight) / 2);
 	glutCreateWindow("FPS");

@@ -24,3 +24,4 @@ struct Mesh
 Mesh* loadMesh(char* );
 Mesh* loadBox();
 Mesh* loadWall();
+Mesh* loadCircle();

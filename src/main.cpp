@@ -11,8 +11,9 @@
 #include "Wall.h"
 #include "btBulletCollisionCommon.h"
 #include "btBulletDynamicsCommon.h"
+#include "BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h"
 #define stepSize 0.25f
-#define num_boxes 1
+#define num_boxes 3
 #define num_enemyes 1
 #define num_Walls 6
 //*******************************************************************
@@ -39,6 +40,14 @@ std::vector<Wall> Map;
 std::vector<Enemy> Enemys;
 int xBefore=0;
 int yBefore = 0;
+
+//World data
+
+btBroadphaseInterface* broadphase;
+btDefaultCollisionConfiguration* collisionConfiguration;
+btCollisionDispatcher* dispatcher;
+btSequentialImpulseConstraintSolver* solver;
+btDiscreteDynamicsWorld* dynamicsWorld;
 //*******************************************************************
 void update()
 {
@@ -215,6 +224,23 @@ void render()
 		modelMatrix = mat4::translate(box.getPosition().x+i, box.getPosition().y+i, box.getPosition().z+i) * modelMatrix;
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), box.getXRotation())*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), box.getYRotation())*modelMatrix;
+
+		btCollisionShape* boxShape = new btBoxShape(btVector3(box.getPosition().x, box.getPosition().y, box.getPosition().z));
+
+		btDefaultMotionState* motionstate = new btDefaultMotionState(btTransform(
+			btQuaternion(0, 0, 0, 1),
+			btVector3(box.getPosition().x + i, box.getPosition().y + i, box.getPosition().z + i)
+			));
+
+		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(
+			0,                  // mass, in kg. 0 -> Static object, will never move.
+			motionstate,
+			boxShape,  // collision shape of body
+			btVector3(0, 0, 0)    // local inertia
+			);
+		btRigidBody *rigidBody = new btRigidBody(rigidBodyCI);
+		dynamicsWorld->addRigidBody(rigidBody);
+
 		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 		glDrawArrays(GL_TRIANGLES, 0, box.getMesh()->vertexList.size());
@@ -295,6 +321,24 @@ void render()
 	//modelMatrix = mat4::translate(camera.at) * modelMatrix; 
 	modelMatrix = mat4::translate(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z) * modelMatrix;
 
+
+	btCollisionShape* boxShape = new btBoxShape(btVector3(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z));
+
+	btDefaultMotionState* motionstate = new btDefaultMotionState(btTransform(
+		btQuaternion(0, 0, 0, 1),
+		btVector3(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z)
+		));
+
+	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(
+		0,                  // mass, in kg. 0 -> Static object, will never move.
+		motionstate,
+		boxShape,  // collision shape of body
+		btVector3(0, 0, 0)    // local inertia
+		);
+	btRigidBody *rigidBody = new btRigidBody(rigidBodyCI);
+	dynamicsWorld->addRigidBody(rigidBody);
+
+
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 	glDrawArrays(GL_TRIANGLES, 0, ak.getMesh()->vertexList.size());
@@ -305,6 +349,16 @@ void render()
 	frame++;
 
 
+}
+void worldInit(){
+	broadphase = new btDbvtBroadphase();
+	collisionConfiguration = new btDefaultCollisionConfiguration();
+	dispatcher = new btCollisionDispatcher(collisionConfiguration);
+
+	solver = new btSequentialImpulseConstraintSolver;
+	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+	btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
+	dynamicsWorld->setGravity(btVector3(0, -10, 0));
 }
 
 void display()
@@ -455,6 +509,7 @@ bool userInit()
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", NULL);
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 
+	worldInit();
 
 	// create a vertex buffer
 	glGenBuffers(1, &wall.getMesh()->vertexBuffer);

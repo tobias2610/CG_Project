@@ -30,6 +30,7 @@ public:
 	}
 	void setHp(){
 		setPosition(vec4(-2.f, -2.f, -20.f, 0.f));
+		
 	}
 	int getHp(){
 		return HP;

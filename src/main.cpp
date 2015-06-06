@@ -535,7 +535,7 @@ bool userInit()
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", NULL);
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 
-	world = new World(wall, enemy, worldWall);
+	world = new World(wall, enemy, worldWall,ak);
 	worldInit();
 	world->setWorldWalls(worldWall);
 

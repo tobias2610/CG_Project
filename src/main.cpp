@@ -418,15 +418,19 @@ void motion(int x, int y)
 			box.setXRotation(((float)dx / 1000)+box.getXRotation());
 			/*std::vector<mat4> wWalls = world->getWorldWalls();
 */
-			worldWall.setXRotation(((float)dx / 1000) + worldWall.getXRotation());
+			//worldWall.setXRotation(((float)dx / 1000) + worldWall.getXRotation());
+			Wall woWall = world->getWall();
+			woWall.setXRotation(((float)dx / 1000) + woWall.getXRotation());
 			world->setWorldWalls(worldWall);
 		}
 
 		if (dy) {
 			box.setYRotation(((float)dy / 1000) + box.getYRotation());
-			worldWall.setYRotation(((float)dy / 1000) + worldWall.getYRotation());
+			//worldWall.setYRotation(((float)dy / 1000) + worldWall.getYRotation());
+			//world->setWorldWalls(worldWall);
+			Wall woWall = world->getWall();
+			woWall.setYRotation(((float)dy / 1000) + woWall.getYRotation());
 			world->setWorldWalls(worldWall);
-
 		}
 
 		glutWarpPointer(windowWidth / 2, windowHeight / 2);

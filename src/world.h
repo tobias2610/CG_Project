@@ -3,6 +3,7 @@
 #include "Wall.h"
 #include "Object.h"
 #include "Enemy.h"
+#include "AK.h"
 #pragma once
 class World : public Object
 {
@@ -17,17 +18,19 @@ private:
 	Wall wall;
 	Enemy enemy;
 	Wall worldWall;
+	AK ak;
 	
 	
 
 public:
 
-	World(Wall sWall, Enemy sEnemy, Wall sworldWall)
+	World(Wall sWall, Enemy sEnemy, Wall sworldWall, AK sAk)
 	{
 
 		wall = sWall;
 		enemy = sEnemy;
 		worldWall = sworldWall;
+		ak = sAk;
 
 	}
 
@@ -54,6 +57,15 @@ public:
 	}
 	int getNum_WorldWalls(){
 		return NUM_WORLDWALLS;
+	}
+	Wall getWall(){
+		return worldWall;
+	}
+	void setAK(AK simAK){
+		ak = simAK;
+	}
+	AK getAK(){
+		return ak;
 	}
 	void setWorldWalls(Wall simplewall){
 		worldWall = simplewall;

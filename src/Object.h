@@ -37,7 +37,10 @@ public:
 		scale = pScale;
 		position = pPosition;
 		loadPic(pImagePath);
-		if (strcmp(pPath,"Box")==0){
+		if (strcmp(pPath, "Circle")==0){
+			mesh = loadCircle();
+		}
+		else if (strcmp(pPath,"Box")==0){
 			printf("Box");
 			mesh = loadBox();
 		}

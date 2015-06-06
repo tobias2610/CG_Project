@@ -119,7 +119,9 @@ void render()
 	vec3 YAxis = vec3(0, 1, 0);
 
 	mat4 modelMatrix = mat4::identity();
+	printf("%f", worldWall.getPosition().x);
 	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(0,0,-10) * modelMatrix;
 	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
@@ -494,7 +496,7 @@ bool userInit()
 		return 0; // error starting up the engine
 	}
 	//wall = Wall(10.f, vec3(0.f, 2.f, -5.f), "../bin/Images/wallBrown.jpg", NULL);
-	worldWall = Wall(10.f, vec3(0.f, 5.f, 0.f), "../bin/Images/wall_texture.jpg", "Wall");
+	worldWall = Wall(10.f, vec3(0.f, -5.f, 0.f), "../bin/Images/wall_texture.jpg", "Wall");
 	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");

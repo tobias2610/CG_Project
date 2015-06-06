@@ -119,9 +119,8 @@ void render()
 	vec3 YAxis = vec3(0, 1, 0);
 
 	mat4 modelMatrix = mat4::identity();
-	printf("%f", worldWall.getPosition().x);
 	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-	modelMatrix = mat4::translate(0,0,-10) * modelMatrix;
+	modelMatrix = mat4::translate(0,0,-20) * modelMatrix;
 	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;

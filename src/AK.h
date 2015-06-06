@@ -1,6 +1,7 @@
 #pragma once
 #include "cgmath.h"
 #include "Object.h"
+#include "Aim.h"
 class AK : public Object
 {
 private:
@@ -8,6 +9,7 @@ private:
 	int bullets;
 	int maxBullets=30;
 	int bulletStock;
+	Aim aim;
 public:
 	AK(){
 
@@ -17,8 +19,11 @@ public:
 		bulletStock = 60;
 		bullets = 30;
 		direction = vec3(0,0,1);
+		aim = Aim(0.05f, vec3(0, 0, -10), "../bin/Images/tex_AK.jpg", "Circle");
 	}
-
+	Aim* getAim(){
+		return &aim;
+	}
 	int getBulletStock(){
 		return bulletStock;
 	}

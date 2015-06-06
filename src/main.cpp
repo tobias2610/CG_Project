@@ -211,8 +211,7 @@ void render()
 	}
 
 	//*****************************************************aim**********************************************************************************
-
-	glBindBuffer(GL_ARRAY_BUFFER, aim.getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexBuffer);
 
 	// bind vertex position buffer
 	vertexPositionLoc = glGetAttribLocation(program, "position");
@@ -229,19 +228,19 @@ void render()
 	glEnableVertexAttribArray(vertexTexlLoc);
 	glVertexAttribPointer(vertexTexlLoc, sizeof(vertex().tex) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(vertex), (GLvoid*)(sizeof(vertex().pos) + sizeof(vertex().norm)));
 
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, aim.getImageWidth(), aim.getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, aim.getImage());
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, ak.getAim()->getImageWidth(), ak.getAim()->getImageHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, ak.getAim()->getImage());
 
-	for (int k = 1, w = aim.getImageWidth() >> 1, h = aim.getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
+	for (int k = 1, w = ak.getAim()->getImageWidth() >> 1, h = ak.getAim()->getImageHeight() >> 1; k < 9; k++, w = w >> 1, h = h >> 1)
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	mat4 modelMatrix = mat4::identity();
-	modelMatrix = mat4::scale(aim.getScale(), aim.getScale(), aim.getScale()) * modelMatrix;
-	modelMatrix = mat4::translate(aim.getPosition().x, aim.getPosition().y , aim.getPosition().z) * modelMatrix;
+	modelMatrix = mat4::scale(ak.getAim()->getScale(), ak.getAim()->getScale(), ak.getAim()->getScale()) * modelMatrix;
+	modelMatrix = mat4::translate(ak.getAim()->getPosition().x, ak.getAim()->getPosition().y , ak.getAim()->getPosition().z) * modelMatrix;
 
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
-	glDrawArrays(GL_TRIANGLES, 0, aim.getMesh()->vertexList.size());
+	glDrawArrays(GL_TRIANGLES, 0, ak.getAim()->getMesh()->vertexList.size());
 
 
 
@@ -492,7 +491,7 @@ bool userInit()
 	box = Box(1.f, vec3(0.f, -2.f, -5.f), "../bin/Images/Box.jpg", "Box");
 	enemy = Enemy(0.1f, vec3(-2.f, -2.f, -8.f), "../bin/Images/Enemy.jpg", "Box");
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
-	aim = Aim(0.05f, vec3(0, 0, -10), "../bin/Images/tex_AK.jpg", "Circle");
+	
 
 	world = new World(wall, enemy, worldWall);
 
@@ -512,10 +511,9 @@ bool userInit()
 	glBindBuffer(GL_ARRAY_BUFFER, ak.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, ak.getMesh()->vertexList.size()*sizeof(vertex), &ak.getMesh()->vertexList[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &aim.getMesh()->vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, aim.getMesh()->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, aim.getMesh()->vertexList.size()*sizeof(vertex), &aim.getMesh()->vertexList[0], GL_STATIC_DRAW);
-
+	glGenBuffers(1, &ak.getAim()->getMesh()->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, ak.getAim()->getMesh()->vertexList.size()*sizeof(vertex), &ak.getAim()->getMesh()->vertexList[0], GL_STATIC_DRAW);
 
 	glGenBuffers(1, &box.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, box.getMesh()->vertexBuffer);

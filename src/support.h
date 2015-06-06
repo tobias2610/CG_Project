@@ -3,10 +3,14 @@
 #include "GL/glew.h"		// glew.sourceforge.net
 #include "GL/freeglut.h"	// freeglut.sourceforge.net
 #include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+#include "GL/irrKlang.h"
 
 #pragma comment( lib, "OpenGL32.lib" )	// link OpenGL32 library
 #pragma comment( lib, "glew32.lib" )	// link glew library
 #pragma comment( lib, "freeglut.lib" )	// link freeglut library
+#pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
 
 // enforce not to use /MD or /MDd flag
 #ifdef _DLL

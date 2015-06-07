@@ -57,17 +57,17 @@ Mesh* loadBox(){
 	pNewMesh->vertexList[10].pos = vec3(-d, d, -d);
 	pNewMesh->vertexList[11].pos = vec3(-d, -d, -d);
 	//top
-	pNewMesh->vertexList[12].pos = vec3(d, d, d);
-	pNewMesh->vertexList[13].pos = vec3(d, d, -d);
-	pNewMesh->vertexList[14].pos = vec3(-d, d, -d);
+	pNewMesh->vertexList[12].pos = vec3(d, d, -d);
+	pNewMesh->vertexList[13].pos = vec3(-d, d, -d);
+	pNewMesh->vertexList[14].pos = vec3(d, d, d);
 
 	pNewMesh->vertexList[15].pos = vec3(d, d, d);
 	pNewMesh->vertexList[16].pos = vec3(-d, d, -d);
 	pNewMesh->vertexList[17].pos = vec3(-d, d, d);
 	//bottom
-	pNewMesh->vertexList[18].pos = vec3(d, -d, d);
-	pNewMesh->vertexList[19].pos = vec3(d, -d, -d);
-	pNewMesh->vertexList[20].pos = vec3(-d, -d, -d);
+	pNewMesh->vertexList[18].pos = vec3(d, -d, -d);
+	pNewMesh->vertexList[19].pos = vec3(-d, -d, -d);
+	pNewMesh->vertexList[20].pos = vec3(d, -d, d);
 
 	pNewMesh->vertexList[21].pos = vec3(d, -d, d);
 	pNewMesh->vertexList[22].pos = vec3(-d, -d, -d);

@@ -510,7 +510,7 @@ void render()
 		glTexImage2D(GL_TEXTURE_2D, k, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	char Overlay[100];
-	sprintf(Overlay, "HP: %d                               %d/%d", ak.getHP() , ak.getBullets(), ak.getBulletStock());
+	sprintf(Overlay, "HP: %d              score: %d                 %d/%d", ak.getHP(), ak.getScore(), ak.getBullets(), ak.getBulletStock());
 	drawString(Overlay);
 	// now swap backbuffer with front buffer, and display it
 	glutSwapBuffers();
@@ -562,12 +562,16 @@ void mouse(int button, int state, int x, int y)
 			engine->play2D("../bin/Sounds/Shoot.wav");
 			for (int i = 0; i < num_enemyes; i++){
 				if (enemy[i].clisionDetect()){
-					for (int j = 0; j < num_boxes; j++){
-						if (!box[j].clisionDetect() && box[j].getPosition().z >enemy[i].getPosition().z ){
-							enemy[i].setHp();
-						}
-					}
+					ak.setScore(10);
+					enemy[i].setHp();
 				}
+			}
+			for (int j = 0; j < num_boxes; j++){
+				if (box[j].clisionDetect()){
+					ak.setScore(20);
+					box[j].setPosition(vec4(1 + (float)j, 0, -200, 0));
+				}
+				
 			}
 		}
 		else{

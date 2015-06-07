@@ -11,6 +11,7 @@ private:
 	int bulletStock;
 	Aim aim;
 	int HP;
+	int score;
 public:
 	AK(){
 
@@ -22,12 +23,19 @@ public:
 		bullets = 30;
 		direction = vec3(0,0,1);
 		aim = Aim(0.05f, vec3(0, 0, -10), "../bin/Images/tex_AK.jpg", "Circle");
+		score = 0;
 	}
 	void damage(int damage){
 		HP -= damage;
 		if (HP <= 0){
 			exit(0);
 		}
+	}
+	int getScore(){
+		return score;
+	}
+	void setScore(int add ){
+		score += add;
 	}
 	int getHP(){
 		return HP;

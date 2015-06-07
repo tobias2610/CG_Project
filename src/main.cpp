@@ -490,7 +490,7 @@ void render()
 	// now swap backbuffer with front buffer, and display it
 
 
-	//cleanCollisionBoxes();
+	cleanCollisionBoxes();
 	createCollisionObjects();
 	glutSwapBuffers();
 	// increment FRAME index

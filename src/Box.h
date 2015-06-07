@@ -24,7 +24,6 @@ public:
 		float dz = acos(b.dot(a + c) / (b.length()*(a + c).length()));
 
 		//if (world.getYRotation() == PI || world.getYRotation() == 2*PI)
-		printf("---Shooot-----\n %f \n %f \n %f \n", (a - vec4(0, 0, 0, 0) + b).x, (a - vec4(0, 0, 0, 0) + b).y, dz);
 		if ((a - vec4(0, 0, 0, 0) + b).y >= -0.001 && (a - vec4(0, 0, 0, 0) + b).y <= 0.1f && (a - vec4(0, 0, 0, 0) + b).x <= -0.9f && (a - vec4(0, 0, 0, 0) + b).x >= -1.0f && (dz) >= 1.5f && dz <= 2.5f)
 			return true;
 		else

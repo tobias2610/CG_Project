@@ -48,19 +48,26 @@ GLuint		textureObject = 0;
 Light		light;
 Material	material;
 Overlay		text;
-std::vector<Wall> Map;
-std::vector<Enemy> Enemys;
+//std::vector<Wall> Map;
+//std::vector<Enemy> Enemys;
 int xBefore = 0;
 int yBefore = 0;
 World  *world;
 
-//World data
+//Collision World data
 
 btBroadphaseInterface* broadphase;
 btDefaultCollisionConfiguration* collisionConfiguration;
 btCollisionDispatcher* dispatcher;
-btSequentialImpulseConstraintSolver* solver;
-btDiscreteDynamicsWorld* dynamicsWorld;
+btCollisionWorld* collisionWorld;
+btCollisionObject collisionWalls[num_Walls];
+btCollisionObject collisionEnemies[num_enemyes];
+std::vector<btCollisionObject> collisionBoxes;
+btCollisionObject collisionAK;
+void checkCollisions();
+void cleanCollisionBoxes();
+void createCollisionObjects();
+void worldInit();
 //*******************************************************************
 
 void drawString(char *string){
@@ -118,6 +125,7 @@ void update()
 	glUniform4fv(glGetUniformLocation(program, "Ks"), 1, material.specular);
 	glUniform1f(glGetUniformLocation(program, "shininess"), material.shininess);
 	glUniform1i(glGetUniformLocation(program, "shininessT"), 1);
+	checkCollisions();
 }
 
 void render()
@@ -354,22 +362,6 @@ void render()
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 		modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
 
-		btCollisionShape* boxShape = new btBoxShape(btVector3(box[i].getPosition().x, box[i].getPosition().y, box[i].getPosition().z));
-
-		btDefaultMotionState* motionstate = new btDefaultMotionState(btTransform(
-			btQuaternion(0, 0, 0, 1),
-			btVector3(box[i].getPosition().x + i, box[i].getPosition().y + i, box[i].getPosition().z + i)
-			));
-
-		btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(
-			0,                  // mass, in kg. 0 -> Static object, will never move.
-			motionstate,
-			boxShape,  // collision shape of body
-			btVector3(0, 0, 0)    // local inertia
-			);
-		btRigidBody *rigidBody = new btRigidBody(rigidBodyCI);
-		dynamicsWorld->addRigidBody(rigidBody);
-
 		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 		glDrawArrays(GL_TRIANGLES, 0, box[i].getMesh()->vertexList.size());
@@ -404,7 +396,7 @@ void render()
 	for (int i = 0; i < num_enemyes; i++){
 		if (enemy[i].getHp()>0){
 		mat4 modelMatrix = mat4::identity();
-			modelMatrix = mat4::scale(4, 8, enemy[i].getScale()) * modelMatrix;
+			modelMatrix = mat4::scale(4,16, enemy[i].getScale()) * modelMatrix;
 			modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI/2))*modelMatrix;
 			modelMatrix = mat4::translate(enemy[i].getPosition().x + world->getPosition().x, enemy[i].getPosition().y + world->getPosition().y, enemy[i].getPosition().z - 5 + world->getPosition().z) * modelMatrix;
 			modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
@@ -483,23 +475,6 @@ void render()
 	modelMatrix = mat4::translate(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z) * modelMatrix;
 
 
-	btCollisionShape* boxShape = new btBoxShape(btVector3(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z));
-
-	btDefaultMotionState* motionstate = new btDefaultMotionState(btTransform(
-		btQuaternion(0, 0, 0, 1),
-		btVector3(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z)
-		));
-
-	btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(
-		0,                  // mass, in kg. 0 -> Static object, will never move.
-		motionstate,
-		boxShape,  // collision shape of body
-		btVector3(0, 0, 0)    // local inertia
-		);
-	btRigidBody *rigidBody = new btRigidBody(rigidBodyCI);
-	dynamicsWorld->addRigidBody(rigidBody);
-
-
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 	glDrawArrays(GL_TRIANGLES, 0, ak.getMesh()->vertexList.size());
@@ -513,23 +488,16 @@ void render()
 	sprintf(Overlay, "HP: %d              score: %d                 %d/%d", ak.getHP(), ak.getScore(), ak.getBullets(), ak.getBulletStock());
 	drawString(Overlay);
 	// now swap backbuffer with front buffer, and display it
+	
+	
+	//cleanCollisionBoxes();
+	createCollisionObjects();
 	glutSwapBuffers();
 	// increment FRAME index
 	frame++;
 
 
 }
-void worldInit(){
-	broadphase = new btDbvtBroadphase();
-	collisionConfiguration = new btDefaultCollisionConfiguration();
-	dispatcher = new btCollisionDispatcher(collisionConfiguration);
-
-	solver = new btSequentialImpulseConstraintSolver;
-	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-	btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
-	dynamicsWorld->setGravity(btVector3(0, -10, 0));
-}
-
 
 
 void display()
@@ -748,7 +716,7 @@ bool userInit()
 
 	world = new World();
 	worldInit();
-
+	createCollisionObjects();
 	// create a vertex buffer
 	/*glGenBuffers(1, &maze.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, maze.getMesh()->vertexBuffer);
@@ -803,7 +771,113 @@ bool userInit()
 
 	return true;
 }
+void worldInit(){
 
+	double scene_size = 500;
+	unsigned int max_objects = 16000;
+
+	collisionConfiguration = new btDefaultCollisionConfiguration();
+	dispatcher = new btCollisionDispatcher(collisionConfiguration);
+
+	btScalar sscene_size = (btScalar)scene_size;
+	btVector3 worldAabbMin(-sscene_size, -sscene_size, -sscene_size);
+	btVector3 worldAabbMax(sscene_size, sscene_size, sscene_size);
+	//This is one type of broadphase, bullet has others that might be faster depending on the application
+	broadphase = new bt32BitAxisSweep3(worldAabbMin, worldAabbMax, max_objects, 0, true);  // true for disabling raycast accelerator
+
+	collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfiguration);
+
+}
+void createCollisionObjects(){
+	for (int i = 0; i < num_enemyes; i++){
+
+		//Create two collision objects
+		btCollisionObject* boxColsn = new btCollisionObject();
+
+		//Move each to a specific location
+		boxColsn->getWorldTransform().setOrigin(btVector3((btScalar)enemy[i].getPosition().x + world->getPosition().x, (btScalar)enemy[i].getPosition().y + world->getPosition().y, (btScalar)enemy[i].getPosition().z + world->getPosition().z));
+		//boxColsn->getWorldTransform().setOrigin(btVector3((btScalar)0 + world->getPosition().x, (btScalar)-5 + world->getPosition().y, (btScalar)-60 + world->getPosition().z));
+
+		
+		//Create a sphere with a radius of 1
+		btCollisionShape* boxShape = new btBoxShape(btVector3((btScalar)enemy[i].getScale(), (btScalar)enemy[i].getScale(), (btScalar)enemy[i].getScale()));
+		//Set the shape of each collision object
+		boxColsn->setCollisionShape(boxShape);
+		//Add the collision objects to our collision world
+		collisionWorld->addCollisionObject(boxColsn);
+
+		collisionEnemies[i] = *boxColsn;
+		
+
+	}
+	//for (int i = 0; i < num_Walls; i++){
+	//	//Create two collision objects
+	//	btCollisionObject* boxColsn = new btCollisionObject();
+
+	//	//Move each to a specific location
+	//	boxColsn->getWorldTransform().setOrigin(btVector3(Map[i].getPosition().x + world->getPosition().x, Map[i].getPosition().y + world->getPosition().y, Map[i].getPosition().z + world->getPosition().z));
+	//	//Create a sphere with a radius of 1
+	//	btCollisionShape* boxShape = new btBoxShape(btVector3(Map[i].getScale(), Map[i].getScale(), Map[i].getScale()));
+	//	//Set the shape of each collision object
+	//	boxColsn->setCollisionShape(boxShape);
+	//	//Add the collision objects to our collision world
+	//	collisionWorld->addCollisionObject(boxColsn);
+	//	collisionWalls[i] = *boxColsn;
+
+	//}
+	btCollisionObject* boxColsn = new btCollisionObject();
+	//Move each to a specific location
+	boxColsn->getWorldTransform().setOrigin(btVector3(ak.getPosition().x + world->getPosition().x, ak.getPosition().y + world->getPosition().y, ak.getPosition().z + world->getPosition().z));
+	//Create a sphere with a radius of 1
+	btCollisionShape* boxShape = new btBoxShape(btVector3(ak.getScale(), ak.getScale(), ak.getScale()));
+	//Set the shape of each collision object
+	boxColsn->setCollisionShape(boxShape);
+	//Add the collision objects to our collision world
+	collisionWorld->addCollisionObject(boxColsn);
+	collisionAK = *boxColsn;
+}
+void checkCollisions(){
+
+		
+	collisionWorld->performDiscreteCollisionDetection();
+
+	int numManifolds = collisionWorld->getDispatcher()->getNumManifolds();
+	//For each contact manifold
+	for (int i = 0; i < numManifolds; i++) {
+		btPersistentManifold* contactManifold = collisionWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		btCollisionObject* obA = const_cast<btCollisionObject*>(contactManifold->getBody0());
+		btCollisionObject* obB = const_cast<btCollisionObject*>(contactManifold->getBody1());
+		
+		/*for (int i = 0; i < num_enemyes; i++){*/
+			//btCollisionObject* obEne = &collisionEnemies[i];
+			contactManifold->refreshContactPoints(obA->getWorldTransform(), obB->getWorldTransform());
+			int numContacts = contactManifold->getNumContacts();
+			//For each contact point in that manifold
+			if (collisionAK.checkCollideWith(obB)){
+				if (obA->checkCollideWith(&collisionEnemies[i])){
+					printf("num coll_ %i", numContacts);
+				}
+			}
+			for (int j = 0; j < numContacts; j++) {
+				//Get the contact information
+				btManifoldPoint& pt = contactManifold->getContactPoint(j);
+				btVector3 ptA = pt.getPositionWorldOnA();
+				btVector3 ptB = pt.getPositionWorldOnB();
+				double ptdist = pt.getDistance();
+				
+			}
+
+		//}
+	}
+}
+void cleanCollisionBoxes(){
+	for (int i = 0; i < num_enemyes; i++){
+		collisionWorld->removeCollisionObject(&collisionEnemies[i]);
+	}
+	for (int i = 0; i < num_Walls; i++){
+		collisionWorld->removeCollisionObject(&collisionWalls[i]);
+	}
+}
 
 void menu(int op) {
 

@@ -740,7 +740,7 @@ bool userInit()
 	enemy[9] = Enemy(0.1f, vec3(10.f, -5.f, -20.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[10] = Enemy(0.1f, vec3(40.f, -5.f, -10.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[11] = Enemy(0.1f, vec3(30.f, -5.f, -34.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[12] = Enemy(5.f, vec3(25.f, -5.f, -40.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[12] = Enemy(0.1f, vec3(25.f, -5.f, -40.f), "../bin/Images/Enemy.jpg", "Box");
 
 	world = new World();
 /*

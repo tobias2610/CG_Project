@@ -9,7 +9,7 @@
 #include "Box.h"
 #include "Enemy.h"
 #include "Wall.h"
-#include "World.h"
+#include "world.h"
 #include "Maze.h"
 #include "Aim.h"
 #include "btBulletCollisionCommon.h"
@@ -529,13 +529,13 @@ void mouse(int button, int state, int x, int y)
 			ak.setBullets(ak.getBullets() - 1);
 			engine->play2D("../bin/Sounds/Shoot.wav");
 			for (int i = 0; i < num_enemyes; i++){
-				if (enemy[i].clisionDetect(world)){
+				if (enemy[i].clisionDetect(world->getPosition(), world->getXRotation(), world->getYRotation())){
 					ak.setScore(10);
 					enemy[i].setHp();
 				}
 			}
 			for (int j = 0; j < num_boxes; j++){
-				if (box[j].clisionDetect()){
+				if (box[j].clisionDetect(world->getPosition(), world->getXRotation(), world->getYRotation())){
 					ak.setScore(20);
 					box[j].setPosition(vec4(1 + (float)j, 0, -200, 0));
 				}

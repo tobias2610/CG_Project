@@ -721,8 +721,8 @@ bool userInit()
 		printf("Could not startup engine\n");
 		return 0; // error starting up the engine
 	}
-	wallBrown = Wall(100.f, vec3(48.f, 20.f, -48.f), "../bin/Images/wallBrown.jpg", "Wall");
-	worldWall = Wall(100.f, vec3(48.f, 15.f, -48.f), "../bin/Images/wall_texture.jpg", "Wall");
+	wallBrown = Wall(100.f, vec3(48.f, 20.f, -48.f), "../bin/Images/hindranceWall.jpg", "Wall");
+	worldWall = Wall(100.f, vec3(48.f, 15.f, -48.f), "../bin/Images/worldWall2.jpg", "Wall");
 	//maze = Maze(1.f, vec3(0.f, 5.f, 0.f), "../bin/Images/wall_texture.jpg", "../bin/Mods/Maze.obj");
 	
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
@@ -747,11 +747,7 @@ bool userInit()
 	enemy[12] = Enemy(0.1f, vec3(25.f, -5.f, -40.f), "../bin/Images/Enemy.jpg", "Box");
 
 	world = new World();
-/*
-	world = new World(wallBrown, enemy, worldWall);
-*/
 	worldInit();
-	//world->setWorldWalls(worldWall);
 
 	// create a vertex buffer
 	/*glGenBuffers(1, &maze.getMesh()->vertexBuffer);
@@ -766,10 +762,6 @@ bool userInit()
 	glBindBuffer(GL_ARRAY_BUFFER, wallBrown.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, wallBrown.getMesh()->vertexList.size()*sizeof(vertex), &wallBrown.getMesh()->vertexList[0], GL_STATIC_DRAW);
 
-	/*glGenBuffers(1, &wall.getMesh()->vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, wall.getMesh()->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, wall.getMesh()->vertexList.size()*sizeof(vertex), &wall.getMesh()->vertexList[0], GL_STATIC_DRAW);
-	*/
 	glGenBuffers(1, &ak.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, ak.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, ak.getMesh()->vertexList.size()*sizeof(vertex), &ak.getMesh()->vertexList[0], GL_STATIC_DRAW);

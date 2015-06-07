@@ -16,7 +16,11 @@ public:
 	}
 
 	bool clisionDetect(){
-		return true;
+		//if (world.getYRotation() == PI || world.getYRotation() == 2*PI)
+		if (vec4(0,0,1,0).dot(getPosition())==0)
+			return true;
+		else
+			return false;
 	}
 	mat4 calcModelMatrix(vec3 position, vec3 rotationAxis, float angle){
 		mat4 modelMatrix = mat4::identity();

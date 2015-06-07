@@ -18,7 +18,7 @@
 #include "Overlay.h"
 #define stepSize 0.5f
 #define num_boxes 3
-#define num_enemyes 13
+#define num_enemyes 1
 #define num_Walls 6
 time_t timer;
 irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
@@ -203,7 +203,7 @@ void render()
 	//*********************front wall**********************
 	mat4 modelMatrix = mat4::identity();
 	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-	modelMatrix = mat4::translate(0,25,0) * modelMatrix;
+	modelMatrix = mat4::translate(0, 25, 0) * modelMatrix;
 	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
@@ -214,15 +214,15 @@ void render()
 	modelMatrix = mat4::identity();
 	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
 	//modelMatrix = mat4::translate(0, 3, 0) * modelMatrix;
-	modelMatrix = mat4::translate(-25,0,0) * modelMatrix;
+	modelMatrix = mat4::translate(-25, 0, 0) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI / 2)) * modelMatrix;
-	modelMatrix = mat4::rotate(vec3(1, 0, 0), -(PI/2)) * modelMatrix;
+	modelMatrix = mat4::rotate(vec3(1, 0, 0), -(PI / 2)) * modelMatrix;
 	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 	modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
-	
+
 	//********************left wall****************************
 
 	modelMatrix = mat4::identity();
@@ -237,7 +237,7 @@ void render()
 	glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 	glDrawArrays(GL_TRIANGLES, 0, worldWall.getMesh()->vertexList.size());
 
-	
+
 	////********************top bottom****************************
 
 	modelMatrix = mat4::identity();
@@ -271,7 +271,7 @@ void render()
 	////********************back wall****************************
 	modelMatrix = mat4::identity();
 	modelMatrix = mat4::scale(worldWall.getScale(), worldWall.getScale(), worldWall.getScale()) * modelMatrix;
-	modelMatrix = mat4::translate(0, 25, 0 ) * modelMatrix;
+	modelMatrix = mat4::translate(0, 25, 0) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), PI) * modelMatrix;
 
 	modelMatrix = mat4::translate(worldWall.getPosition().x + world->getPosition().x, worldWall.getPosition().y + world->getPosition().y, worldWall.getPosition().z + world->getPosition().z) * modelMatrix;
@@ -304,7 +304,7 @@ void render()
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	modelMatrix = mat4::identity();
-	modelMatrix = mat4::scale(wallBrown.getScale(), wallBrown.getScale()/2, wallBrown.getScale()) * modelMatrix;
+	modelMatrix = mat4::scale(wallBrown.getScale(), wallBrown.getScale() / 2, wallBrown.getScale()) * modelMatrix;
 	modelMatrix = mat4::translate(10, -10, -20) * modelMatrix;
 	modelMatrix = mat4::translate(wallBrown.getPosition().x + world->getPosition().x, wallBrown.getPosition().y + world->getPosition().y, wallBrown.getPosition().z + world->getPosition().z) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
@@ -315,7 +315,7 @@ void render()
 
 
 	modelMatrix = mat4::identity();
-	modelMatrix = mat4::scale(wallBrown.getScale(), wallBrown.getScale()/2, wallBrown.getScale()) * modelMatrix;
+	modelMatrix = mat4::scale(wallBrown.getScale(), wallBrown.getScale() / 2, wallBrown.getScale()) * modelMatrix;
 	modelMatrix = mat4::translate(-20, -10, -50) * modelMatrix;
 	modelMatrix = mat4::translate(wallBrown.getPosition().x + world->getPosition().x, wallBrown.getPosition().y + world->getPosition().y, wallBrown.getPosition().z + world->getPosition().z) * modelMatrix;
 	modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
@@ -356,7 +356,7 @@ void render()
 			ak.damage(10);
 		}
 		mat4 modelMatrix = mat4::identity();
-	//	modelMatrix = mat4::translate(box[i].getPosition().x + world->getPosition().x);
+		//	modelMatrix = mat4::translate(box[i].getPosition().x + world->getPosition().x);
 		modelMatrix = mat4::scale(box[i].getScale(), box[i].getScale(), box[i].getScale()) * modelMatrix;
 		modelMatrix = mat4::translate(box[i].getPosition().x + world->getPosition().x, box[i].getPosition().y + world->getPosition().y, box[i].getPosition().z + world->getPosition().z) * modelMatrix;
 		modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
@@ -395,16 +395,16 @@ void render()
 
 	for (int i = 0; i < num_enemyes; i++){
 		if (enemy[i].getHp()>0){
-		mat4 modelMatrix = mat4::identity();
-			modelMatrix = mat4::scale(4,16, enemy[i].getScale()) * modelMatrix;
-			modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI/2))*modelMatrix;
+			mat4 modelMatrix = mat4::identity();
+			modelMatrix = mat4::scale(4, 16, enemy[i].getScale()) * modelMatrix;
+			modelMatrix = mat4::rotate(vec3(0, 1, 0), (PI / 2))*modelMatrix;
 			modelMatrix = mat4::translate(enemy[i].getPosition().x + world->getPosition().x, enemy[i].getPosition().y + world->getPosition().y, enemy[i].getPosition().z - 5 + world->getPosition().z) * modelMatrix;
 			modelMatrix = mat4::rotate(vec3(0, 1, 0), world->getXRotation())*modelMatrix;
 			modelMatrix = mat4::rotate(vec3(1, 0, 0), world->getYRotation())*modelMatrix;
-		glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
+			glUniformMatrix4fv(glGetUniformLocation(program, "modelMatrix"), 1, GL_TRUE, modelMatrix);
 
 			glDrawArrays(GL_TRIANGLES, 0, enemy[i].getMesh()->vertexList.size());
-	}
+		}
 	}
 
 	//*****************************************************aim**********************************************************************************
@@ -488,8 +488,8 @@ void render()
 	sprintf(Overlay, "HP: %d              score: %d                 %d/%d", ak.getHP(), ak.getScore(), ak.getBullets(), ak.getBulletStock());
 	drawString(Overlay);
 	// now swap backbuffer with front buffer, and display it
-	
-	
+
+
 	//cleanCollisionBoxes();
 	createCollisionObjects();
 	glutSwapBuffers();
@@ -504,7 +504,7 @@ void display()
 {
 	update();
 	render();
-	
+
 }
 
 void reshape(int width, int height)
@@ -524,7 +524,7 @@ void reshape(int width, int height)
 
 void mouse(int button, int state, int x, int y)
 {
-	if (button == GLUT_LEFT_BUTTON && state==GLUT_DOWN){
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
 		if (ak.getBullets() > 0){
 			ak.setBullets(ak.getBullets() - 1);
 			engine->play2D("../bin/Sounds/Shoot.wav");
@@ -539,7 +539,7 @@ void mouse(int button, int state, int x, int y)
 					ak.setScore(20);
 					box[j].setPosition(vec4(1 + (float)j, 0, -200, 0));
 				}
-				
+
 			}
 		}
 		else{
@@ -692,7 +692,7 @@ bool userInit()
 	wallBrown = Wall(100.f, vec3(48.f, 20.f, -48.f), "../bin/Images/hindranceWall.jpg", "Wall");
 	worldWall = Wall(100.f, vec3(48.f, 15.f, -48.f), "../bin/Images/worldWall2.jpg", "Wall");
 	//maze = Maze(1.f, vec3(0.f, 5.f, 0.f), "../bin/Images/wall_texture.jpg", "../bin/Mods/Maze.obj");
-	
+
 	ak = AK(0.006f, vec3(0, 0, 0), "../bin/Images/tex_AK.jpg", "../bin/Mods/AK.obj");
 	text = Overlay("../bin/Images/Tex_1.jpg");
 
@@ -702,7 +702,7 @@ bool userInit()
 	box[2] = Box(0.5f, vec3(10.f, 0.f, -20.f), "../bin/Images/Box.jpg", "Box");
 
 	enemy[0] = Enemy(0.1f, vec3(0.f, -5.f, -60.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[1] = Enemy(0.1f, vec3(60.f, -5.f, -70.f), "../bin/Images/Enemy.jpg", "Box");
+	/*enemy[1] = Enemy(0.1f, vec3(60.f, -5.f, -70.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[3] = Enemy(0.1f, vec3(28.f, -5.f, -15.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[4] = Enemy(0.1f, vec3(14.f, -5.f, -50.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[5] = Enemy(0.1f, vec3(30.f, -5.f, -45.f), "../bin/Images/Enemy.jpg", "Box");
@@ -712,7 +712,7 @@ bool userInit()
 	enemy[9] = Enemy(0.1f, vec3(10.f, -5.f, -20.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[10] = Enemy(0.1f, vec3(40.f, -5.f, -10.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[11] = Enemy(0.1f, vec3(30.f, -5.f, -34.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[12] = Enemy(0.1f, vec3(25.f, -5.f, -40.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[12] = Enemy(0.1f, vec3(25.f, -5.f, -40.f), "../bin/Images/Enemy.jpg", "Box");*/
 
 	world = new World();
 	worldInit();
@@ -721,7 +721,7 @@ bool userInit()
 	/*glGenBuffers(1, &maze.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, maze.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, maze.getMesh()->vertexList.size()*sizeof(vertex), &maze.getMesh()->vertexList[0], GL_STATIC_DRAW);
-*/
+	*/
 	glGenBuffers(1, &worldWall.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, worldWall.getMesh()->vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, worldWall.getMesh()->vertexList.size()*sizeof(vertex), &worldWall.getMesh()->vertexList[0], GL_STATIC_DRAW);
@@ -795,19 +795,16 @@ void createCollisionObjects(){
 		btCollisionObject* boxColsn = new btCollisionObject();
 
 		//Move each to a specific location
-		boxColsn->getWorldTransform().setOrigin(btVector3((btScalar)enemy[i].getPosition().x + world->getPosition().x, (btScalar)enemy[i].getPosition().y + world->getPosition().y, (btScalar)enemy[i].getPosition().z + world->getPosition().z));
-		//boxColsn->getWorldTransform().setOrigin(btVector3((btScalar)0 + world->getPosition().x, (btScalar)-5 + world->getPosition().y, (btScalar)-60 + world->getPosition().z));
-
-		
+		boxColsn->getWorldTransform().setOrigin(btVector3((btScalar)-enemy[i].getPosition().x + -world->getPosition().x, -(btScalar)enemy[i].getPosition().y + world->getPosition().y, -(btScalar)enemy[i].getPosition().z + world->getPosition().z));
 		//Create a sphere with a radius of 1
-		btCollisionShape* boxShape = new btBoxShape(btVector3((btScalar)enemy[i].getScale(), (btScalar)enemy[i].getScale(), (btScalar)enemy[i].getScale()));
+		btCollisionShape* boxShape = new btBoxShape(btVector3((btScalar)1, (btScalar)1, (btScalar)enemy[i].getScale()/2));
 		//Set the shape of each collision object
 		boxColsn->setCollisionShape(boxShape);
 		//Add the collision objects to our collision world
 		collisionWorld->addCollisionObject(boxColsn);
 
 		collisionEnemies[i] = *boxColsn;
-		
+
 
 	}
 	//for (int i = 0; i < num_Walls; i++){
@@ -827,9 +824,9 @@ void createCollisionObjects(){
 	//}
 	btCollisionObject* boxColsn = new btCollisionObject();
 	//Move each to a specific location
-	boxColsn->getWorldTransform().setOrigin(btVector3(ak.getPosition().x + world->getPosition().x, ak.getPosition().y + world->getPosition().y, ak.getPosition().z + world->getPosition().z));
+	boxColsn->getWorldTransform().setOrigin(btVector3(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z));
 	//Create a sphere with a radius of 1
-	btCollisionShape* boxShape = new btBoxShape(btVector3(ak.getScale(), ak.getScale(), ak.getScale()));
+	btCollisionShape* boxShape = new btBoxShape(btVector3(0.1f, 0.1f, 0.1f));
 	//Set the shape of each collision object
 	boxColsn->setCollisionShape(boxShape);
 	//Add the collision objects to our collision world
@@ -838,34 +835,36 @@ void createCollisionObjects(){
 }
 void checkCollisions(){
 
-		
+
 	collisionWorld->performDiscreteCollisionDetection();
 
 	int numManifolds = collisionWorld->getDispatcher()->getNumManifolds();
 	//For each contact manifold
+	printf("%d\n", numManifolds);
 	for (int i = 0; i < numManifolds; i++) {
 		btPersistentManifold* contactManifold = collisionWorld->getDispatcher()->getManifoldByIndexInternal(i);
 		btCollisionObject* obA = const_cast<btCollisionObject*>(contactManifold->getBody0());
 		btCollisionObject* obB = const_cast<btCollisionObject*>(contactManifold->getBody1());
-		
+
 		/*for (int i = 0; i < num_enemyes; i++){*/
-			//btCollisionObject* obEne = &collisionEnemies[i];
-			contactManifold->refreshContactPoints(obA->getWorldTransform(), obB->getWorldTransform());
-			int numContacts = contactManifold->getNumContacts();
-			//For each contact point in that manifold
-			if (collisionAK.checkCollideWith(obB)){
-				if (obA->checkCollideWith(&collisionEnemies[i])){
-					printf("num coll_ %i", numContacts);
-				}
+		//btCollisionObject* obEne = &collisionEnemies[i];
+		contactManifold->refreshContactPoints(obA->getWorldTransform(), obB->getWorldTransform());
+		int numContacts = contactManifold->getNumContacts();
+		//For each contact point in that manifold
+		if (collisionAK.checkCollideWith(obB)){
+			btManifoldPoint& pt = contactManifold->getContactPoint(i);
+			if (obA->checkCollideWith(&collisionEnemies[i])){
+				//printf("%d\n", i);
 			}
-			for (int j = 0; j < numContacts; j++) {
-				//Get the contact information
-				btManifoldPoint& pt = contactManifold->getContactPoint(j);
-				btVector3 ptA = pt.getPositionWorldOnA();
-				btVector3 ptB = pt.getPositionWorldOnB();
-				double ptdist = pt.getDistance();
-				
-			}
+		}
+		for (int j = 0; j < numContacts; j++) {
+			//Get the contact information
+			btManifoldPoint& pt = contactManifold->getContactPoint(j);
+			btVector3 ptA = pt.getPositionWorldOnA();
+			btVector3 ptB = pt.getPositionWorldOnB();
+			double ptdist = pt.getDistance();
+
+		}
 
 		//}
 	}
@@ -891,11 +890,11 @@ void menu(int op) {
 }
 
 void createMenu(void){
-	
-	submenu_id = glutCreateMenu(menu);    
+
+	submenu_id = glutCreateMenu(menu);
 	menu_id = glutCreateMenu(menu);
 	glutAddMenuEntry("New Try", 1);
-	glutAddMenuEntry("Quit", 0);     
+	glutAddMenuEntry("Quit", 0);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 

@@ -12,9 +12,6 @@
 #include "world.h"
 #include "Maze.h"
 #include "Aim.h"
-#include "btBulletCollisionCommon.h"
-#include "btBulletDynamicsCommon.h"
-#include "BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h"
 #include "Overlay.h"
 #define stepSize 0.5f
 #define num_boxes 4
@@ -54,20 +51,6 @@ int xBefore = 0;
 int yBefore = 0;
 World  *world;
 
-//Collision World data
-
-btBroadphaseInterface* broadphase;
-btDefaultCollisionConfiguration* collisionConfiguration;
-btCollisionDispatcher* dispatcher;
-btCollisionWorld* collisionWorld;
-btCollisionObject collisionWalls[num_Walls];
-btCollisionObject collisionEnemies[num_enemyes];
-std::vector<btCollisionObject> collisionBoxes;
-btCollisionObject collisionAK;
-void checkCollisions();
-void cleanCollisionBoxes();
-void createCollisionObjects();
-void worldInit();
 //*******************************************************************
 
 void drawString(char *string){
@@ -125,7 +108,6 @@ void update()
 	glUniform4fv(glGetUniformLocation(program, "Ks"), 1, material.specular);
 	glUniform1f(glGetUniformLocation(program, "shininess"), material.shininess);
 	glUniform1i(glGetUniformLocation(program, "shininessT"), 1);
-	checkCollisions();
 }
 
 void render()
@@ -350,10 +332,10 @@ void render()
 
 	for (int i = 0; i < 1; i++){
 		if (box[i].getPosition().z<0)
-			box[i].setPosition(box[i].getPosition() + vec4(0, 0, 1.f, 0.f)*0.01f*(float)frame);
+			box[i].setPosition(box[i].getPosition() + vec4(0, 0, 1.f, 0.f)*0.003f*(float)frame);
 		else{
 			box[i].setPosition(vec4(1 + (float)i, 0, -200, 0));
-			ak.damage(10);
+			ak.damage(5);
 		}
 		mat4 modelMatrix = mat4::identity();
 		//	modelMatrix = mat4::translate(box[i].getPosition().x + world->getPosition().x);
@@ -488,10 +470,6 @@ void render()
 	sprintf(Overlay, "HP: %d              score: %d                 %d/%d", ak.getHP(), ak.getScore(), ak.getBullets(), ak.getBulletStock());
 	drawString(Overlay);
 	// now swap backbuffer with front buffer, and display it
-
-
-	cleanCollisionBoxes();
-	createCollisionObjects();
 	glutSwapBuffers();
 	// increment FRAME index
 	frame++;
@@ -590,50 +568,65 @@ void keyboard(unsigned char key, int x, int y)
 	time_t timeT;
 	vec4 a = mat4(cos((2 * PI - world->getXRotation())), 0, (sin((2 * PI - world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - world->getXRotation())), 0.f, cos((2 * PI - world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
 	vec4 b = mat4(cos((world->getXRotation())), 0, (sin((world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((world->getXRotation())), 0.f, cos((world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
-	printf("%f", world->getPosition().z + a.z*stepSize);
+	printf("%f", world->getPosition().x + a.x*stepSize);
 	if ((world->getPosition().x + a.x*stepSize > -85 && world->getPosition().x + a.x*stepSize < 0 && (world->getPosition().z + a.z*stepSize) < 85) && (world->getPosition().z + a.z*stepSize) > 0){
-		
-		if ((key == 'w' || key == 'W')){
-			time(&timeT);
-			if (difftime(timeT, timer) >= 14){
-				engine->play2D("../bin/Sounds/walk.wav");
-				time(&timer);
+		if (world->getPosition().x + a.x*stepSize > -8 || world->getPosition().z + a.z*stepSize>12.5 || world->getPosition().z + a.z*stepSize < 11.5){
+			if (world->getPosition().x + a.x*stepSize < -77 || world->getPosition().z + a.z*stepSize > 40.5 || world->getPosition().z + a.z*stepSize < 39.5){
+				if ((key == 'w' || key == 'W')){
+					time(&timeT);
+					if (difftime(timeT, timer) >= 14){
+						engine->play2D("../bin/Sounds/walk.wav");
+						time(&timer);
+					}
+					world->setPosition(world->getPosition() + a*stepSize);
+					//world->setWorldWalls(world->getWall());
+				}
 			}
-			world->setPosition(world->getPosition() + a*stepSize);
-			//world->setWorldWalls(world->getWall());
 		}
 	}
 	if ((world->getPosition().x - a.x*stepSize > -85 && world->getPosition().x - a.x*stepSize < 0 && (world->getPosition().z - a.z*stepSize) < 85) && (world->getPosition().z - a.z*stepSize) > 0){
-		if (key == 's' || key == 'S'){
-			time(&timeT);
-			if (difftime(timeT, timer) >= 14){
-				engine->play2D("../bin/Sounds/walk.wav");
-				time(&timer);
+		if (world->getPosition().x - b.x*stepSize > -8 || world->getPosition().z - b.z*stepSize > 12.5 || world->getPosition().z - b.z*stepSize < 11.5){
+			if (world->getPosition().x - a.x*stepSize < -77 || world->getPosition().z - a.z*stepSize > 40.5 || world->getPosition().z - a.z*stepSize < 39.5){
+				if (key == 's' || key == 'S'){
+					time(&timeT);
+					if (difftime(timeT, timer) >= 14){
+						engine->play2D("../bin/Sounds/walk.wav");
+						time(&timer);
+					}
+					world->setPosition(world->getPosition() - a*stepSize);
+					//world->setWorldWalls(world->getWall());
+				}
 			}
-			world->setPosition(world->getPosition() - a*stepSize);
-			//world->setWorldWalls(world->getWall());
 		}
 	}
 	if ((world->getPosition().x + b.x*stepSize > -85 && world->getPosition().x + b.x*stepSize < 0 && (world->getPosition().z + b.z*stepSize) < 85) && (world->getPosition().z + b.z*stepSize) > 0){
-		if (key == 'a' || key == 'A'){
-			time(&timeT);
-			if (difftime(timeT, timer) >= 14){
-				engine->play2D("../bin/Sounds/walk.wav");
-				time(&timer);
+		if (world->getPosition().x + a.x*stepSize > -8 || world->getPosition().z + a.z*stepSize > 12.5 || world->getPosition().z + a.z*stepSize < 11.5){
+			if (world->getPosition().x + b.x*stepSize < -77 || world->getPosition().z + b.z*stepSize > 40.5 || world->getPosition().z + b.z*stepSize < 39.5){
+				if (key == 'a' || key == 'A'){
+					time(&timeT);
+					if (difftime(timeT, timer) >= 14){
+						engine->play2D("../bin/Sounds/walk.wav");
+						time(&timer);
+					}
+					world->setPosition(world->getPosition() + b*stepSize);
+					//world->setWorldWalls(world->getWall());
+				}
 			}
-			world->setPosition(world->getPosition() + b*stepSize);
-			//world->setWorldWalls(world->getWall());
 		}
 	}
 	if ((world->getPosition().x - b.x*stepSize > -85 && world->getPosition().x - b.x*stepSize < 0 && (world->getPosition().z - b.z*stepSize) < 85) && (world->getPosition().z - b.z*stepSize) > 0){
-		if (key == 'd' || key == 'D'){
-			time(&timeT);
-			if (difftime(timeT, timer) >= 14){
-				engine->play2D("../bin/Sounds/walk.wav");
-				time(&timer);
+		if (world->getPosition().x - b.x*stepSize > -8 || world->getPosition().z - b.z*stepSize > 12.5 || world->getPosition().z - b.z*stepSize < 11.5){
+			if (world->getPosition().x - b.x*stepSize < -77 || world->getPosition().z - b.z*stepSize > 40.5 || world->getPosition().z - b.z*stepSize < 39.5){
+				if (key == 'd' || key == 'D'){
+					time(&timeT);
+					if (difftime(timeT, timer) >= 14){
+						engine->play2D("../bin/Sounds/walk.wav");
+						time(&timer);
+					}
+					world->setPosition(world->getPosition() - b*stepSize);
+					//world->setWorldWalls(world->getWall());
+				}
 			}
-			world->setPosition(world->getPosition() - b*stepSize);
-			//world->setWorldWalls(world->getWall());
 		}
 	}
 	if (key == 'r' || key == 'R'){
@@ -725,8 +718,6 @@ bool userInit()
 	enemy[12] = Enemy(0.1f, vec3(25.f, -5.f, -40.f), "../bin/Images/Enemy.jpg", "Box");
 
 	world = new World();
-	worldInit();
-	createCollisionObjects();
 	// create a vertex buffer
 	/*glGenBuffers(1, &maze.getMesh()->vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, maze.getMesh()->vertexBuffer);
@@ -780,112 +771,6 @@ bool userInit()
 	material.shininess = 100.0f;
 
 	return true;
-}
-void worldInit(){
-
-	double scene_size = 500;
-	unsigned int max_objects = 16000;
-
-	collisionConfiguration = new btDefaultCollisionConfiguration();
-	dispatcher = new btCollisionDispatcher(collisionConfiguration);
-
-	btScalar sscene_size = (btScalar)scene_size;
-	btVector3 worldAabbMin(-sscene_size, -sscene_size, -sscene_size);
-	btVector3 worldAabbMax(sscene_size, sscene_size, sscene_size);
-	//This is one type of broadphase, bullet has others that might be faster depending on the application
-	broadphase = new bt32BitAxisSweep3(worldAabbMin, worldAabbMax, max_objects, 0, true);  // true for disabling raycast accelerator
-
-	collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfiguration);
-
-}
-void createCollisionObjects(){
-	for (int i = 0; i < num_enemyes; i++){
-
-		//Create two collision objects
-		btCollisionObject* boxColsn = new btCollisionObject();
-
-		//Move each to a specific location
-		boxColsn->getWorldTransform().setOrigin(btVector3((btScalar)-enemy[i].getPosition().x + -world->getPosition().x, -(btScalar)enemy[i].getPosition().y + world->getPosition().y, -(btScalar)enemy[i].getPosition().z + world->getPosition().z));
-		//Create a sphere with a radius of 1
-		btCollisionShape* boxShape = new btBoxShape(btVector3((btScalar)1, (btScalar)1, (btScalar)enemy[i].getScale()/2));
-		//Set the shape of each collision object
-		boxColsn->setCollisionShape(boxShape);
-		//Add the collision objects to our collision world
-		collisionWorld->addCollisionObject(boxColsn);
-
-		collisionEnemies[i] = *boxColsn;
-
-
-	}
-	//for (int i = 0; i < num_Walls; i++){
-	//	//Create two collision objects
-	//	btCollisionObject* boxColsn = new btCollisionObject();
-
-	//	//Move each to a specific location
-	//	boxColsn->getWorldTransform().setOrigin(btVector3(Map[i].getPosition().x + world->getPosition().x, Map[i].getPosition().y + world->getPosition().y, Map[i].getPosition().z + world->getPosition().z));
-	//	//Create a sphere with a radius of 1
-	//	btCollisionShape* boxShape = new btBoxShape(btVector3(Map[i].getScale(), Map[i].getScale(), Map[i].getScale()));
-	//	//Set the shape of each collision object
-	//	boxColsn->setCollisionShape(boxShape);
-	//	//Add the collision objects to our collision world
-	//	collisionWorld->addCollisionObject(boxColsn);
-	//	collisionWalls[i] = *boxColsn;
-
-	//}
-	btCollisionObject* boxColsn = new btCollisionObject();
-	//Move each to a specific location
-	boxColsn->getWorldTransform().setOrigin(btVector3(ak.getPosition().x, ak.getPosition().y, ak.getPosition().z));
-	//Create a sphere with a radius of 1
-	btCollisionShape* boxShape = new btBoxShape(btVector3(0.1f, 0.1f, 0.1f));
-	//Set the shape of each collision object
-	boxColsn->setCollisionShape(boxShape);
-	//Add the collision objects to our collision world
-	collisionWorld->addCollisionObject(boxColsn);
-	collisionAK = *boxColsn;
-}
-void checkCollisions(){
-
-
-	collisionWorld->performDiscreteCollisionDetection();
-
-	int numManifolds = collisionWorld->getDispatcher()->getNumManifolds();
-	//For each contact manifold
-	//printf("%d\n", numManifolds);
-	for (int i = 0; i < numManifolds; i++) {
-		btPersistentManifold* contactManifold = collisionWorld->getDispatcher()->getManifoldByIndexInternal(i);
-		btCollisionObject* obA = const_cast<btCollisionObject*>(contactManifold->getBody0());
-		btCollisionObject* obB = const_cast<btCollisionObject*>(contactManifold->getBody1());
-
-		/*for (int i = 0; i < num_enemyes; i++){*/
-		//btCollisionObject* obEne = &collisionEnemies[i];
-		contactManifold->refreshContactPoints(obA->getWorldTransform(), obB->getWorldTransform());
-		int numContacts = contactManifold->getNumContacts();
-		//For each contact point in that manifold
-		if (collisionAK.checkCollideWith(obB)){
-			btManifoldPoint& pt = contactManifold->getContactPoint(i);
-			if (obA->checkCollideWith(&collisionEnemies[i])){
-				//printf("%d\n", i);
-			}
-		}
-		for (int j = 0; j < numContacts; j++) {
-			//Get the contact information
-			btManifoldPoint& pt = contactManifold->getContactPoint(j);
-			btVector3 ptA = pt.getPositionWorldOnA();
-			btVector3 ptB = pt.getPositionWorldOnB();
-			double ptdist = pt.getDistance();
-
-		}
-
-		//}
-	}
-}
-void cleanCollisionBoxes(){
-	for (int i = 0; i < num_enemyes; i++){
-		collisionWorld->removeCollisionObject(&collisionEnemies[i]);
-	}
-	for (int i = 0; i < num_Walls; i++){
-		collisionWorld->removeCollisionObject(&collisionWalls[i]);
-	}
 }
 
 void menu(int op) {

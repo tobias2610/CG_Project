@@ -17,8 +17,8 @@
 #include "BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h"
 #include "Overlay.h"
 #define stepSize 0.5f
-#define num_boxes 3
-#define num_enemyes 1
+#define num_boxes 4
+#define num_enemyes 17
 #define num_Walls 6
 time_t timer;
 irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
@@ -590,43 +590,53 @@ void keyboard(unsigned char key, int x, int y)
 	time_t timeT;
 	vec4 a = mat4(cos((2 * PI - world->getXRotation())), 0, (sin((2 * PI - world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((2 * PI - world->getXRotation())), 0.f, cos((2 * PI - world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(0, 0, 1, 0));
 	vec4 b = mat4(cos((world->getXRotation())), 0, (sin((world->getXRotation()))), 0.f, 0, 1, 0.f, 0.f, sin((world->getXRotation())), 0.f, cos((world->getXRotation())), 0.f, 0.f, 0.f, 0.f, 1.f).operator*(vec4(1, 0, 0, 0));
-	if (key == 'w' || key == 'W'){
-		time(&timeT);
-		if (difftime(timeT, timer) >= 14){
-			engine->play2D("../bin/Sounds/walk.wav");
-			time(&timer);
+	printf("%f", world->getPosition().z + a.z*stepSize);
+	if ((world->getPosition().x + a.x*stepSize > -85 && world->getPosition().x + a.x*stepSize < 0 && (world->getPosition().z + a.z*stepSize) < 85) && (world->getPosition().z + a.z*stepSize) > 0){
+		
+		if ((key == 'w' || key == 'W')){
+			time(&timeT);
+			if (difftime(timeT, timer) >= 14){
+				engine->play2D("../bin/Sounds/walk.wav");
+				time(&timer);
+			}
+			world->setPosition(world->getPosition() + a*stepSize);
+			//world->setWorldWalls(world->getWall());
 		}
-		world->setPosition(world->getPosition() + a*stepSize);
-		//world->setWorldWalls(world->getWall());
 	}
-	else if (key == 's' || key == 'S'){
-		time(&timeT);
-		if (difftime(timeT, timer) >= 14){
-			engine->play2D("../bin/Sounds/walk.wav");
-			time(&timer);
+	if ((world->getPosition().x - a.x*stepSize > -85 && world->getPosition().x - a.x*stepSize < 0 && (world->getPosition().z - a.z*stepSize) < 85) && (world->getPosition().z - a.z*stepSize) > 0){
+		if (key == 's' || key == 'S'){
+			time(&timeT);
+			if (difftime(timeT, timer) >= 14){
+				engine->play2D("../bin/Sounds/walk.wav");
+				time(&timer);
+			}
+			world->setPosition(world->getPosition() - a*stepSize);
+			//world->setWorldWalls(world->getWall());
 		}
-		world->setPosition(world->getPosition() - a*stepSize);
-		//world->setWorldWalls(world->getWall());
 	}
-	else if (key == 'a' || key == 'A'){
-		time(&timeT);
-		if (difftime(timeT, timer) >= 14){
-			engine->play2D("../bin/Sounds/walk.wav");
-			time(&timer);
+	if ((world->getPosition().x + b.x*stepSize > -85 && world->getPosition().x + b.x*stepSize < 0 && (world->getPosition().z + b.z*stepSize) < 85) && (world->getPosition().z + b.z*stepSize) > 0){
+		if (key == 'a' || key == 'A'){
+			time(&timeT);
+			if (difftime(timeT, timer) >= 14){
+				engine->play2D("../bin/Sounds/walk.wav");
+				time(&timer);
+			}
+			world->setPosition(world->getPosition() + b*stepSize);
+			//world->setWorldWalls(world->getWall());
 		}
-		world->setPosition(world->getPosition() + b*stepSize);
-		//world->setWorldWalls(world->getWall());
 	}
-	else if (key == 'd' || key == 'D'){
-		time(&timeT);
-		if (difftime(timeT, timer) >= 14){
-			engine->play2D("../bin/Sounds/walk.wav");
-			time(&timer);
+	if ((world->getPosition().x - b.x*stepSize > -85 && world->getPosition().x - b.x*stepSize < 0 && (world->getPosition().z - b.z*stepSize) < 85) && (world->getPosition().z - b.z*stepSize) > 0){
+		if (key == 'd' || key == 'D'){
+			time(&timeT);
+			if (difftime(timeT, timer) >= 14){
+				engine->play2D("../bin/Sounds/walk.wav");
+				time(&timer);
+			}
+			world->setPosition(world->getPosition() - b*stepSize);
+			//world->setWorldWalls(world->getWall());
 		}
-		world->setPosition(world->getPosition() - b*stepSize);
-		//world->setWorldWalls(world->getWall());
 	}
-	else if (key == 'r' || key == 'R'){
+	if (key == 'r' || key == 'R'){
 		if (ak.getBulletStock() > 0){
 			if (ak.getBulletStock() >= ak.getMaxBullet()){
 				ak.setBullets(ak.getMaxBullet());
@@ -702,7 +712,7 @@ bool userInit()
 	box[2] = Box(0.5f, vec3(10.f, 0.f, -20.f), "../bin/Images/Box.jpg", "Box");
 
 	enemy[0] = Enemy(0.1f, vec3(0.f, -5.f, -60.f), "../bin/Images/Enemy.jpg", "Box");
-	/*enemy[1] = Enemy(0.1f, vec3(60.f, -5.f, -70.f), "../bin/Images/Enemy.jpg", "Box");
+	enemy[1] = Enemy(0.1f, vec3(60.f, -5.f, -70.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[3] = Enemy(0.1f, vec3(28.f, -5.f, -15.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[4] = Enemy(0.1f, vec3(14.f, -5.f, -50.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[5] = Enemy(0.1f, vec3(30.f, -5.f, -45.f), "../bin/Images/Enemy.jpg", "Box");
@@ -712,7 +722,7 @@ bool userInit()
 	enemy[9] = Enemy(0.1f, vec3(10.f, -5.f, -20.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[10] = Enemy(0.1f, vec3(40.f, -5.f, -10.f), "../bin/Images/Enemy.jpg", "Box");
 	enemy[11] = Enemy(0.1f, vec3(30.f, -5.f, -34.f), "../bin/Images/Enemy.jpg", "Box");
-	enemy[12] = Enemy(0.1f, vec3(25.f, -5.f, -40.f), "../bin/Images/Enemy.jpg", "Box");*/
+	enemy[12] = Enemy(0.1f, vec3(25.f, -5.f, -40.f), "../bin/Images/Enemy.jpg", "Box");
 
 	world = new World();
 	worldInit();

@@ -46,7 +46,7 @@ public:
 		return modelMatrix;
 	}
 	void setHp(){
-		setPosition(vec4(-2.f, -5.f, -20.f, 0.f));
+		HP = 0;
 		
 	}
 	int getHp(){

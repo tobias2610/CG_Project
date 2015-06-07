@@ -529,7 +529,7 @@ void mouse(int button, int state, int x, int y)
 			ak.setBullets(ak.getBullets() - 1);
 			engine->play2D("../bin/Sounds/Shoot.wav");
 			for (int i = 0; i < num_enemyes; i++){
-				if (enemy[i].clisionDetect()){
+				if (enemy[i].clisionDetect(world)){
 					ak.setScore(10);
 					enemy[i].setHp();
 				}
@@ -840,7 +840,7 @@ void checkCollisions(){
 
 	int numManifolds = collisionWorld->getDispatcher()->getNumManifolds();
 	//For each contact manifold
-	printf("%d\n", numManifolds);
+	//printf("%d\n", numManifolds);
 	for (int i = 0; i < numManifolds; i++) {
 		btPersistentManifold* contactManifold = collisionWorld->getDispatcher()->getManifoldByIndexInternal(i);
 		btCollisionObject* obA = const_cast<btCollisionObject*>(contactManifold->getBody0());

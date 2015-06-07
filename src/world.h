@@ -15,7 +15,7 @@ private:
 	std::vector<mat4> worldWalls;
 	std::vector<mat4> enemies;
 	Wall wall;
-	Enemy enemy;
+	//Enemy enemy;
 	Wall worldWall;
 	vec4 addPos;
 	
